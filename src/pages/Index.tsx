@@ -3,8 +3,9 @@ import React, { useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { Features } from "@/components/Features";
-import { ComparisonTool } from "@/components/ComparisonTool";
+import { EnhancedComparisonTool } from "@/components/EnhancedComparisonTool";
 import { RecommendationEngine } from "@/components/RecommendationEngine";
+import { PolicyScraper } from "@/components/PolicyScraper";
 import { Footer } from "@/components/Footer";
 
 const Index = () => {
@@ -36,7 +37,8 @@ const Index = () => {
       <Navbar />
       <Hero />
       <Features />
-      <ComparisonTool />
+      <EnhancedComparisonTool />
+      <PolicyScraper />
       <RecommendationEngine />
       <Footer />
     </div>
