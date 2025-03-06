@@ -5,12 +5,14 @@ interface ChipBadgeProps {
   children: React.ReactNode;
   variant?: "default" | "outline" | "secondary" | "accent";
   className?: string;
+  onClick?: () => void; // Add onClick handler prop
 }
 
 export const ChipBadge = ({
   children,
   variant = "default",
   className,
+  onClick,
 }: ChipBadgeProps) => {
   const variants = {
     default:
@@ -28,8 +30,10 @@ export const ChipBadge = ({
       className={cn(
         "inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border transition-colors",
         variants[variant],
+        onClick && "cursor-pointer hover:opacity-80", // Add cursor-pointer when onClick is provided
         className
       )}
+      onClick={onClick}
     >
       {children}
     </span>
