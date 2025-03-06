@@ -1,5 +1,5 @@
-
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { FadeIn } from "./ui/FadeIn";
 import { ChipBadge } from "./ui/ChipBadge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,8 @@ import {
   Shield,
   ArrowRight,
   Loader2,
-  CheckCircle2
+  CheckCircle2,
+  Search
 } from "lucide-react";
 
 export const RecommendationEngine: React.FC = () => {
@@ -82,6 +83,19 @@ export const RecommendationEngine: React.FC = () => {
                   </p>
                   <div className="mt-2 text-sm font-medium">— Sarah T., Healthcare Professional</div>
                 </div>
+              </div>
+              
+              <div className="pt-2">
+                <Button 
+                  asChild
+                  className="bg-gradient-to-r from-insura-blue to-insura-teal hover:opacity-90 transition-opacity"
+                >
+                  <Link to="/insurance-finder">
+                    <Search className="mr-2 h-4 w-4" />
+                    Try Our Advanced Insurance Finder
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
               </div>
             </div>
           </FadeIn>
