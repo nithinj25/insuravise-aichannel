@@ -25,6 +25,21 @@ import { useToast } from "@/components/ui/use-toast";
 import { getPersonalizedRecommendations, UserPreferences, summarizePolicyPdf } from "@/services/insuranceService";
 import { PolicyDetailsModal } from "@/components/PolicyDetailsModal";
 import { RecommendationResults } from "@/components/RecommendationResults";
+import { ChatBox } from "@/components/ChatBox";
+
+// Define the structure for user preferences
+interface UserPreferences {
+  type: string;
+  coverageLevel: number;
+  budget: number;
+  familySize: number;
+  age: number;
+  preExistingConditions: string[];
+  smokingStatus: string;
+  drivingRecord: string;
+  propertyValue: number;
+  priorities: string[];
+}
 
 const InsuranceFinder: React.FC = () => {
   const { toast } = useToast();
@@ -543,6 +558,9 @@ const InsuranceFinder: React.FC = () => {
           onClose={() => setShowPolicyModal(false)}
         />
       )}
+      
+      {/* Add the ChatBox component */}
+      <ChatBox />
     </div>
   );
 };
