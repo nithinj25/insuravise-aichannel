@@ -7,6 +7,7 @@ import { EnhancedComparisonTool } from "@/components/EnhancedComparisonTool";
 import { RecommendationEngine } from "@/components/RecommendationEngine";
 import { PolicyScraper } from "@/components/PolicyScraper";
 import { Footer } from "@/components/Footer";
+import { ChatBox } from "@/components/ChatBox";
 
 const Index = () => {
   // Add smooth scroll behavior for anchor links
@@ -41,6 +42,7 @@ const Index = () => {
       <PolicyScraper />
       <RecommendationEngine />
       <Footer />
+      <ChatBox />
     </div>
   );
 };
