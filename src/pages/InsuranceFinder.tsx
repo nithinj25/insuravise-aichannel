@@ -27,19 +27,7 @@ import { PolicyDetailsModal } from "@/components/PolicyDetailsModal";
 import { RecommendationResults } from "@/components/RecommendationResults";
 import { ChatBox } from "@/components/ChatBox";
 
-// Define the structure for user preferences
-interface UserPreferences {
-  type: string;
-  coverageLevel: number;
-  budget: number;
-  familySize: number;
-  age: number;
-  preExistingConditions: string[];
-  smokingStatus: string;
-  drivingRecord: string;
-  propertyValue: number;
-  priorities: string[];
-}
+// Removing the duplicate UserPreferences interface since we're importing it
 
 const InsuranceFinder: React.FC = () => {
   const { toast } = useToast();
@@ -51,7 +39,7 @@ const InsuranceFinder: React.FC = () => {
   const [policyDetails, setPolicyDetails] = useState<any>(null);
   const [isPolicyLoading, setIsPolicyLoading] = useState(false);
   
-  // Form state
+  // Form state - using the imported UserPreferences interface
   const [formData, setFormData] = useState<UserPreferences>({
     type: "health",
     coverageLevel: 50,
