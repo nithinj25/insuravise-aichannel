@@ -1,94 +1,156 @@
 
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
-import { 
-  Brain, 
-  ArrowLeft, 
-  FileText, 
-  Search, 
-  RefreshCw, 
-  AlertCircle, 
-  Check,
-  ShieldCheck,
-  Heart,
-  Users,
-  Car,
-  Home as HomeIcon,
-  Cigarette,
-  Activity,
-  DollarSign
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardDescription, 
-  CardContent, 
-  CardFooter 
-} from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Slider } from "@/components/ui/slider";
+import { Link } from "react-router-dom";
+import { FadeIn } from "@/components/ui/FadeIn";
 import { ChipBadge } from "@/components/ui/ChipBadge";
-import { fetchInsurancePlans } from "@/services/insuranceService";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
+import { 
+  ArrowLeft, 
+  Search, 
+  Loader2, 
+  CheckCircle2, 
+  ShieldCheck,
+  DollarSign,
+  Users,
+  Heart,
+  Smoking,
+  Car,
+  Home,
+  Star,
+  FileText
+} from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { getPersonalizedRecommendations, UserPreferences, summarizePolicyPdf } from "@/services/insuranceService";
 import { PolicyDetailsModal } from "@/components/PolicyDetailsModal";
+import { RecommendationResults } from "@/components/RecommendationResults";
 
 const InsuranceFinder: React.FC = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("health");
-  const [budget, setBudget] = useState([250]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingRecommendation, setIsLoadingRecommendation] = useState(false);
-  const [plans, setPlans] = useState<any[]>([]);
+  const [showResults, setShowResults] = useState(false);
+  const [recommendations, setRecommendations] = useState<any[]>([]);
   const [showPolicyModal, setShowPolicyModal] = useState(false);
   const [selectedPolicy, setSelectedPolicy] = useState<any>(null);
-  const [userInfo, setUserInfo] = useState({
-    age: "",
-    location: "",
-    needs: "",
-    // New parameters
-    occupation: "",
-    familySize: "1",
-    hasPreExistingConditions: "no",
-    coverageLevel: "standard",
-    deductiblePreference: "medium",
-    isSmoker: "no",
-    drivingRecord: "clean",
-    propertyValue: "",
-    priorityFactor: "price" // price, coverage, customer_service
-  });
-  const [recommendedPlan, setRecommendedPlan] = useState<any>(null);
+  const [policyDetails, setPolicyDetails] = useState<any>(null);
+  const [isPolicyLoading, setIsPolicyLoading] = useState(false);
   
-  const insuranceTypes = [
-    { id: "health", label: "Health", icon: <Heart className="h-4 w-4" /> },
-    { id: "life", label: "Life", icon: <Users className="h-4 w-4" /> },
-    { id: "auto", label: "Auto", icon: <Car className="h-4 w-4" /> },
-    { id: "home", label: "Home", icon: <HomeIcon className="h-4 w-4" /> },
+  // Form state
+  const [formData, setFormData] = useState<UserPreferences>({
+    type: "health",
+    coverageLevel: 50,
+    budget: 200,
+    familySize: 1,
+    age: 30,
+    preExistingConditions: [],
+    smokingStatus: "non-smoker",
+    drivingRecord: "good",
+    propertyValue: 300000,
+    priorities: []
+  });
+  
+  // Pre-existing conditions options
+  const preExistingConditionOptions = [
+    { id: "diabetes", label: "Diabetes" },
+    { id: "heart-disease", label: "Heart Disease" },
+    { id: "asthma", label: "Asthma" },
+    { id: "cancer", label: "Cancer History" },
+    { id: "hypertension", label: "Hypertension" },
+    { id: "none", label: "None" }
   ];
+  
+  // Priority options
+  const priorityOptions = [
+    { id: "price", label: "Low Price" },
+    { id: "coverage", label: "Coverage Breadth" },
+    { id: "network", label: "Provider Network" },
+    { id: "deductible", label: "Low Deductible" },
+    { id: "customer-service", label: "Customer Service" },
+    { id: "digital-tools", label: "Digital Tools" }
+  ];
+  
+  // Handle form input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+  
+  // Handle slider changes
+  const handleSliderChange = (name: string, value: number[]) => {
+    setFormData(prev => ({
+      ...prev,
+      [name]: value[0]
+    }));
+  };
+  
+  // Handle checkbox changes for multi-select options
+  const handleCheckboxChange = (category: string, id: string) => {
+    setFormData(prev => {
+      // Special case for "none" in pre-existing conditions
+      if (category === 'preExistingConditions') {
+        if (id === 'none') {
+          return {
+            ...prev,
+            [category]: ['none']
+          };
+        } else {
+          const updatedConditions = prev.preExistingConditions?.filter(item => item !== 'none') || [];
+          if (updatedConditions.includes(id)) {
+            return {
+              ...prev,
+              [category]: updatedConditions.filter(item => item !== id)
+            };
+          } else {
+            return {
+              ...prev,
+              [category]: [...updatedConditions, id]
+            };
+          }
+        }
+      } else {
+        // For other multi-select categories like priorities
+        const currentArray = prev[category as keyof UserPreferences] as string[] || [];
+        if (currentArray.includes(id)) {
+          return {
+            ...prev,
+            [category]: currentArray.filter(item => item !== id)
+          };
+        } else {
+          return {
+            ...prev,
+            [category]: [...currentArray, id]
+          };
+        }
+      }
+    });
+  };
 
-  useEffect(() => {
-    fetchPlans(activeTab);
-  }, [activeTab]);
-
-  const fetchPlans = async (type: string) => {
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsLoading(true);
+    
     try {
-      const response = await fetchInsurancePlans(type);
+      const response = await getPersonalizedRecommendations(formData);
+      
       if (response.success) {
-        setPlans(response.data);
+        setRecommendations(response.data);
+        setShowResults(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         toast({
           title: "Error",
-          description: response.error || "Failed to fetch insurance plans",
+          description: response.error || "Failed to get recommendations",
           variant: "destructive",
         });
       }
     } catch (error) {
-      console.error("Error fetching plans:", error);
+      console.error("Error getting recommendations:", error);
       toast({
         title: "Error",
         description: "An unexpected error occurred",
@@ -98,534 +160,388 @@ const InsuranceFinder: React.FC = () => {
       setIsLoading(false);
     }
   };
-
-  const handleViewPolicy = (plan: any) => {
+  
+  // Handle back button click
+  const handleBackClick = () => {
+    setShowResults(false);
+  };
+  
+  // Handle view policy details
+  const handleViewPolicy = async (plan: any) => {
     setSelectedPolicy(plan);
     setShowPolicyModal(true);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setUserInfo(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleFindBestPlan = () => {
-    setIsLoadingRecommendation(true);
+    setIsPolicyLoading(true);
     
-    // Simulate AI analysis to find the best plan with enhanced algorithm
-    setTimeout(() => {
-      // Enhanced algorithm based on all user parameters
-      let filteredPlans = plans.filter(plan => plan.price <= budget[0]);
-      
-      if (filteredPlans.length > 0) {
-        // Apply weights to different factors based on user priorities
-        const scoredPlans = filteredPlans.map(plan => {
-          let score = 0;
-          
-          // Price score (inverse relationship - lower is better)
-          const priceScore = 1 - (plan.price / budget[0]);
-          
-          // Coverage score (based on number of features)
-          const coverageScore = plan.features.length / 10; // Normalize to 0-1 range assuming max 10 features
-          
-          // Apply weights based on user priority
-          if (userInfo.priorityFactor === "price") {
-            score = (priceScore * 0.7) + (coverageScore * 0.3);
-          } else if (userInfo.priorityFactor === "coverage") {
-            score = (priceScore * 0.3) + (coverageScore * 0.7);
-          } else {
-            score = (priceScore * 0.5) + (coverageScore * 0.5);
-          }
-          
-          // Adjust score based on specific user parameters
-          if (activeTab === "health") {
-            if (userInfo.hasPreExistingConditions === "yes" && 
-                plan.features.some((f: string) => f.toLowerCase().includes("pre-existing"))) {
-              score += 0.2;
-            }
-            
-            if (userInfo.coverageLevel === "premium" && 
-                plan.features.some((f: string) => f.toLowerCase().includes("premium") || 
-                                               f.toLowerCase().includes("comprehensive"))) {
-              score += 0.15;
-            }
-          } else if (activeTab === "life") {
-            if (userInfo.isSmoker === "yes" && 
-                plan.features.some((f: string) => f.toLowerCase().includes("smoker"))) {
-              score += 0.2;
-            }
-          } else if (activeTab === "auto") {
-            if (userInfo.drivingRecord !== "clean" && 
-                plan.features.some((f: string) => f.toLowerCase().includes("accident") || 
-                                               f.toLowerCase().includes("violation"))) {
-              score += 0.2;
-            }
-          }
-          
-          return { ...plan, score };
-        });
-        
-        // Sort by score (highest first)
-        const bestPlan = scoredPlans.sort((a, b) => b.score - a.score)[0];
-        
-        setRecommendedPlan(bestPlan);
-        
-        toast({
-          title: "Analysis Complete",
-          description: "We've found the best insurance plan for your needs!",
-        });
+    try {
+      const policyResponse = await summarizePolicyPdf(plan.policyUrl);
+      if (policyResponse.success) {
+        setPolicyDetails(policyResponse.data);
       } else {
         toast({
-          title: "No Matching Plans",
-          description: "We couldn't find plans within your budget. Try adjusting your criteria.",
+          title: "Error",
+          description: policyResponse.error || "Failed to load policy details",
           variant: "destructive",
         });
-        setRecommendedPlan(null);
       }
-      
-      setIsLoadingRecommendation(false);
-    }, 2000);
-  };
-
-  // Render insurance-specific form fields based on active tab
-  const renderSpecificFields = () => {
-    switch (activeTab) {
-      case "health":
-        return (
-          <>
-            <div className="space-y-2">
-              <label htmlFor="hasPreExistingConditions" className="text-sm font-medium">Pre-existing Conditions</label>
-              <select 
-                id="hasPreExistingConditions" 
-                name="hasPreExistingConditions" 
-                value={userInfo.hasPreExistingConditions}
-                onChange={handleInputChange}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-insura-blue focus:ring-offset-2"
-              >
-                <option value="no">No</option>
-                <option value="yes">Yes</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="coverageLevel" className="text-sm font-medium">Desired Coverage Level</label>
-              <select 
-                id="coverageLevel" 
-                name="coverageLevel" 
-                value={userInfo.coverageLevel}
-                onChange={handleInputChange}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-insura-blue focus:ring-offset-2"
-              >
-                <option value="basic">Basic</option>
-                <option value="standard">Standard</option>
-                <option value="premium">Premium</option>
-              </select>
-            </div>
-          </>
-        );
-      
-      case "life":
-        return (
-          <>
-            <div className="space-y-2">
-              <label htmlFor="occupation" className="text-sm font-medium">Occupation</label>
-              <Input 
-                id="occupation" 
-                name="occupation" 
-                placeholder="Enter your occupation" 
-                value={userInfo.occupation}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="isSmoker" className="text-sm font-medium">Smoking Status</label>
-              <select 
-                id="isSmoker" 
-                name="isSmoker" 
-                value={userInfo.isSmoker}
-                onChange={handleInputChange}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-insura-blue focus:ring-offset-2"
-              >
-                <option value="no">Non-smoker</option>
-                <option value="yes">Smoker</option>
-              </select>
-            </div>
-          </>
-        );
-        
-      case "auto":
-        return (
-          <>
-            <div className="space-y-2">
-              <label htmlFor="drivingRecord" className="text-sm font-medium">Driving Record</label>
-              <select 
-                id="drivingRecord" 
-                name="drivingRecord" 
-                value={userInfo.drivingRecord}
-                onChange={handleInputChange}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-insura-blue focus:ring-offset-2"
-              >
-                <option value="clean">Clean record</option>
-                <option value="minor">Minor violations</option>
-                <option value="major">Major violations</option>
-                <option value="accident">Recent accidents</option>
-              </select>
-            </div>
-          </>
-        );
-        
-      case "home":
-        return (
-          <>
-            <div className="space-y-2">
-              <label htmlFor="propertyValue" className="text-sm font-medium">Property Value</label>
-              <Input 
-                id="propertyValue" 
-                name="propertyValue" 
-                placeholder="Estimated value in $" 
-                value={userInfo.propertyValue}
-                onChange={handleInputChange}
-              />
-            </div>
-          </>
-        );
-        
-      default:
-        return null;
+    } catch (error) {
+      console.error("Error fetching policy details:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load policy details",
+        variant: "destructive",
+      });
+    } finally {
+      setIsPolicyLoading(false);
     }
   };
-
+  
   return (
-    <div className="container max-w-7xl mx-auto py-12 px-4">
-      <Button 
-        variant="outline" 
-        className="mb-8" 
-        onClick={() => navigate("/")}
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to Home
-      </Button>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-1">
-          <Card className="sticky top-24">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 text-insura-blue" /> 
-                Find Your Best Plan
-              </CardTitle>
-              <CardDescription>
-                Tell us about your needs and our AI will find the perfect insurance plan for you.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid grid-cols-2 md:grid-cols-4">
-                  {insuranceTypes.map((type) => (
-                    <TabsTrigger key={type.id} value={type.id} className="text-sm flex items-center gap-1">
-                      {type.icon}
-                      {type.label}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </Tabs>
+    <div className="min-h-screen bg-gradient-to-b from-white to-insura-gray/20">
+      <div className="container-padding max-w-6xl mx-auto py-12">
+        <FadeIn>
+          <div className="mb-8">
+            <Button asChild variant="outline" className="mb-6">
+              <Link to="/">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Home
+              </Link>
+            </Button>
+            
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <ChipBadge className="mb-4">Market Analyzer</ChipBadge>
+              <h1 className="text-3xl font-semibold mb-4">
+                Find Your Perfect{" "}
+                <span className="bg-gradient-to-r from-insura-blue to-insura-teal bg-clip-text text-transparent">
+                  Insurance Match
+                </span>
+              </h1>
+              <p className="text-muted-foreground">
+                Our AI analyzes thousands of real insurance policies from across the market to find the 
+                best options for your unique needs.
+              </p>
+            </div>
+          </div>
+        </FadeIn>
+        
+        {!showResults ? (
+          <FadeIn delay={100}>
+            <div className="premium-card rounded-2xl overflow-hidden">
+              <div className="bg-gradient-to-r from-insura-blue to-insura-teal p-6 text-white">
+                <h2 className="text-xl font-medium">Tell Us About Your Needs</h2>
+                <p className="text-white/80 text-sm mt-2">
+                  Provide your preferences so we can find the best insurance policies for you
+                </p>
+              </div>
               
-              <div className="space-y-4 pt-4 max-h-[60vh] overflow-y-auto pr-2">
-                <div className="space-y-2">
-                  <label htmlFor="age" className="text-sm font-medium">Age</label>
-                  <Input 
-                    id="age" 
-                    name="age" 
-                    placeholder="Enter your age" 
-                    value={userInfo.age}
-                    onChange={handleInputChange}
-                  />
+              <form onSubmit={handleSubmit} className="p-6 space-y-8">
+                {/* Insurance Type */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Insurance Type</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {["health", "life", "auto", "home"].map((type) => (
+                      <div 
+                        key={type}
+                        className={`cursor-pointer rounded-xl border-2 p-4 text-center transition-all ${
+                          formData.type === type 
+                            ? 'border-insura-blue bg-insura-blue/5' 
+                            : 'border-gray-200 hover:border-insura-blue/50'
+                        }`}
+                        onClick={() => setFormData({...formData, type})}
+                      >
+                        {type === "health" && <Heart className="h-6 w-6 mx-auto mb-2" />}
+                        {type === "life" && <Users className="h-6 w-6 mx-auto mb-2" />}
+                        {type === "auto" && <Car className="h-6 w-6 mx-auto mb-2" />}
+                        {type === "home" && <Home className="h-6 w-6 mx-auto mb-2" />}
+                        <div className="font-medium capitalize">{type}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 
-                <div className="space-y-2">
-                  <label htmlFor="location" className="text-sm font-medium">Location</label>
-                  <Input 
-                    id="location" 
-                    name="location" 
-                    placeholder="City, State" 
-                    value={userInfo.location}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <label htmlFor="familySize" className="text-sm font-medium">Family Size</label>
-                  <select 
-                    id="familySize" 
-                    name="familySize" 
-                    value={userInfo.familySize}
-                    onChange={handleInputChange}
-                    className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-insura-blue focus:ring-offset-2"
-                  >
-                    <option value="1">Individual (1)</option>
-                    <option value="2">Couple (2)</option>
-                    <option value="3">Small Family (3-4)</option>
-                    <option value="5">Large Family (5+)</option>
-                  </select>
-                </div>
-                
-                {/* Insurance type specific fields */}
-                {renderSpecificFields()}
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Maximum Monthly Budget</label>
-                  <div className="pt-4 pb-2">
+                {/* Coverage Level */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="h-5 w-5 text-insura-blue" />
+                    <h3 className="text-lg font-medium">Coverage Level</h3>
+                  </div>
+                  <div className="px-4">
                     <Slider
-                      value={budget}
-                      onValueChange={setBudget}
-                      max={500}
+                      value={[formData.coverageLevel]}
+                      onValueChange={(value) => handleSliderChange('coverageLevel', value)}
+                      max={100}
                       step={10}
                       className="mb-2"
                     />
-                    <div className="flex justify-between">
-                      <span className="text-sm text-muted-foreground">$0</span>
-                      <span className="text-sm font-medium">${budget[0]}</span>
-                      <span className="text-sm text-muted-foreground">$500</span>
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>Basic</span>
+                      <span>Standard</span>
+                      <span>Premium</span>
                     </div>
                   </div>
                 </div>
                 
-                <div className="space-y-2">
-                  <label htmlFor="priorityFactor" className="text-sm font-medium">Your Priority</label>
-                  <select 
-                    id="priorityFactor" 
-                    name="priorityFactor" 
-                    value={userInfo.priorityFactor}
-                    onChange={handleInputChange}
-                    className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-insura-blue focus:ring-offset-2"
-                  >
-                    <option value="price">Lower Price</option>
-                    <option value="coverage">Better Coverage</option>
-                    <option value="customer_service">Customer Service</option>
-                  </select>
+                {/* Budget */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="h-5 w-5 text-insura-blue" />
+                    <h3 className="text-lg font-medium">Monthly Budget</h3>
+                  </div>
+                  <div className="px-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-lg font-medium">${formData.budget}</span>
+                      <Slider
+                        value={[formData.budget || 200]}
+                        onValueChange={(value) => handleSliderChange('budget', value)}
+                        min={50}
+                        max={500}
+                        step={10}
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
                 </div>
                 
-                <div className="space-y-2">
-                  <label htmlFor="needs" className="text-sm font-medium">Additional Needs</label>
-                  <Textarea 
-                    id="needs" 
-                    name="needs" 
-                    placeholder="Tell us about your specific requirements..."
-                    className="resize-none"
-                    rows={3}
-                    value={userInfo.needs}
-                    onChange={handleInputChange}
-                  />
+                {/* Personal Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Age</label>
+                    <Input 
+                      type="number" 
+                      name="age"
+                      value={formData.age}
+                      onChange={handleInputChange}
+                      min={18}
+                      max={100}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Family Size</label>
+                    <select
+                      name="familySize"
+                      value={formData.familySize}
+                      onChange={handleInputChange}
+                      className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-insura-blue focus:ring-offset-2"
+                    >
+                      <option value={1}>Just Me (1)</option>
+                      <option value={2}>Me + Partner (2)</option>
+                      <option value={3}>Small Family (3-4)</option>
+                      <option value={5}>Large Family (5+)</option>
+                    </select>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button 
-                className="w-full bg-gradient-to-r from-insura-blue to-insura-teal hover:opacity-90 transition-opacity"
-                onClick={handleFindBestPlan}
-                disabled={isLoadingRecommendation}
-              >
-                {isLoadingRecommendation ? (
+                
+                {/* Conditional Fields Based on Insurance Type */}
+                {formData.type === "health" && (
                   <>
-                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                    Analyzing Plans...
-                  </>
-                ) : (
-                  <>
-                    <Brain className="mr-2 h-4 w-4" />
-                    Find Best Plan
+                    {/* Pre-existing Conditions */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Pre-existing Conditions</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {preExistingConditionOptions.map((condition) => (
+                          <div 
+                            key={condition.id}
+                            className={`flex items-center gap-2 p-3 border rounded-lg cursor-pointer transition-all ${
+                              formData.preExistingConditions?.includes(condition.id)
+                                ? 'border-insura-blue bg-insura-blue/5'
+                                : 'border-gray-200 hover:border-insura-blue/50'
+                            }`}
+                            onClick={() => handleCheckboxChange('preExistingConditions', condition.id)}
+                          >
+                            <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
+                              formData.preExistingConditions?.includes(condition.id)
+                                ? 'bg-insura-blue text-white'
+                                : 'bg-gray-200'
+                            }`}>
+                              {formData.preExistingConditions?.includes(condition.id) && <CheckCircle2 className="h-4 w-4" />}
+                            </div>
+                            <span className="text-sm">{condition.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Smoking Status */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Smoking className="h-5 w-5 text-insura-blue" />
+                        <h3 className="text-lg font-medium">Smoking Status</h3>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        {["non-smoker", "smoker"].map((status) => (
+                          <div 
+                            key={status}
+                            className={`cursor-pointer rounded-xl border-2 p-4 text-center transition-all ${
+                              formData.smokingStatus === status 
+                                ? 'border-insura-blue bg-insura-blue/5' 
+                                : 'border-gray-200 hover:border-insura-blue/50'
+                            }`}
+                            onClick={() => setFormData({...formData, smokingStatus: status})}
+                          >
+                            <div className="font-medium capitalize">{status.replace('-', ' ')}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </>
                 )}
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
-        
-        <div className="lg:col-span-2">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold">Insurance Plan Finder</h1>
-            <p className="text-muted-foreground mt-2">
-              Compare insurance plans and get AI-generated summaries of policy documents.
-            </p>
-          </div>
-          
-          {isLoading ? (
-            <div className="flex items-center justify-center p-12 border rounded-lg">
-              <div className="text-center">
-                <RefreshCw className="h-10 w-10 animate-spin text-insura-blue mb-4 mx-auto" />
-                <p className="text-insura-blue">Fetching insurance plans...</p>
-              </div>
-            </div>
-          ) : recommendedPlan ? (
-            <div className="space-y-6">
-              <div className="bg-insura-lightblue/20 rounded-xl p-6 border border-insura-blue/30">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <ChipBadge className="mb-2">AI Recommended</ChipBadge>
-                    <h2 className="text-2xl font-bold">{recommendedPlan.providerName}</h2>
-                    <p className="text-lg">{recommendedPlan.name}</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-3xl font-bold">
-                      ${recommendedPlan.price}<span className="text-sm font-normal text-muted-foreground">/mo</span>
+                
+                {formData.type === "auto" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Car className="h-5 w-5 text-insura-blue" />
+                      <h3 className="text-lg font-medium">Driving Record</h3>
                     </div>
-                    <ChipBadge variant="outline" className="mt-2">
-                      {recommendedPlan.type.charAt(0).toUpperCase() + recommendedPlan.type.slice(1)}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {["excellent", "good", "fair", "poor"].map((record) => (
+                        <div 
+                          key={record}
+                          className={`cursor-pointer rounded-xl border-2 p-4 text-center transition-all ${
+                            formData.drivingRecord === record 
+                              ? 'border-insura-blue bg-insura-blue/5' 
+                              : 'border-gray-200 hover:border-insura-blue/50'
+                          }`}
+                          onClick={() => setFormData({...formData, drivingRecord: record})}
+                        >
+                          <div className="font-medium capitalize">{record}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {formData.type === "home" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Home className="h-5 w-5 text-insura-blue" />
+                      <h3 className="text-lg font-medium">Property Value</h3>
+                    </div>
+                    <div className="px-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-lg font-medium whitespace-nowrap">${(formData.propertyValue || 300000).toLocaleString()}</span>
+                        <Slider
+                          value={[formData.propertyValue || 300000]}
+                          onValueChange={(value) => handleSliderChange('propertyValue', value)}
+                          min={100000}
+                          max={1000000}
+                          step={50000}
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Priorities */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Star className="h-5 w-5 text-insura-blue" />
+                    <h3 className="text-lg font-medium">Your Priorities</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Select what matters most to you (choose up to 3)</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {priorityOptions.map((priority) => (
+                      <div 
+                        key={priority.id}
+                        className={`flex items-center gap-2 p-3 border rounded-lg cursor-pointer transition-all ${
+                          formData.priorities?.includes(priority.id)
+                            ? 'border-insura-blue bg-insura-blue/5'
+                            : 'border-gray-200 hover:border-insura-blue/50'
+                        } ${(formData.priorities?.length || 0) >= 3 && !formData.priorities?.includes(priority.id) ? 'opacity-50' : ''}`}
+                        onClick={() => {
+                          if ((formData.priorities?.length || 0) < 3 || formData.priorities?.includes(priority.id)) {
+                            handleCheckboxChange('priorities', priority.id);
+                          }
+                        }}
+                      >
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
+                          formData.priorities?.includes(priority.id)
+                            ? 'bg-insura-blue text-white'
+                            : 'bg-gray-200'
+                        }`}>
+                          {formData.priorities?.includes(priority.id) && <CheckCircle2 className="h-4 w-4" />}
+                        </div>
+                        <span className="text-sm">{priority.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Additional Information */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Additional Information</h3>
+                  <Textarea 
+                    placeholder="Is there anything else we should know about your insurance needs?"
+                    className="resize-none"
+                    rows={3}
+                  />
+                </div>
+                
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-insura-blue to-insura-teal hover:opacity-90 transition-opacity"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Analyzing Market Options...
+                    </>
+                  ) : (
+                    <>
+                      <Search className="mr-2 h-4 w-4" />
+                      Find My Best Insurance Options
+                    </>
+                  )}
+                </Button>
+              </form>
+            </div>
+          </FadeIn>
+        ) : (
+          <FadeIn>
+            <div className="space-y-6">
+              <Button variant="outline" onClick={handleBackClick} className="mb-4">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Preferences
+              </Button>
+              
+              <div className="premium-card rounded-2xl p-6 space-y-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <div>
+                    <h2 className="text-xl font-semibold">Your Personalized Analysis</h2>
+                    <p className="text-muted-foreground">
+                      Based on your {formData.priorities?.length ? formData.priorities?.length : 'key'} priorities and specified needs
+                    </p>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    <ChipBadge variant="default">
+                      {formData.type.charAt(0).toUpperCase() + formData.type.slice(1)} Insurance
+                    </ChipBadge>
+                    <ChipBadge variant="outline">
+                      Budget: ${formData.budget}/mo
+                    </ChipBadge>
+                    <ChipBadge variant="accent">
+                      Coverage: {formData.coverageLevel}%
                     </ChipBadge>
                   </div>
                 </div>
                 
-                <div className="mt-6">
-                  <h3 className="font-medium mb-3">Plan Features</h3>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {recommendedPlan.features.map((feature: string, i: number) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <Check className="h-5 w-5 text-insura-blue flex-shrink-0 mt-0.5" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <div className="mt-6">
-                  <h3 className="font-medium mb-3">Why This Plan Is Recommended For You</h3>
-                  <div className="bg-white/80 p-4 rounded-lg">
-                    <ul className="space-y-2">
-                      {userInfo.priorityFactor === 'price' && (
-                        <li className="flex items-start gap-2">
-                          <DollarSign className="h-5 w-5 text-insura-teal flex-shrink-0 mt-0.5" />
-                          <span>Meets your budget requirements while providing good value</span>
-                        </li>
-                      )}
-                      {userInfo.priorityFactor === 'coverage' && (
-                        <li className="flex items-start gap-2">
-                          <ShieldCheck className="h-5 w-5 text-insura-teal flex-shrink-0 mt-0.5" />
-                          <span>Provides comprehensive coverage matching your needs</span>
-                        </li>
-                      )}
-                      {userInfo.hasPreExistingConditions === 'yes' && activeTab === 'health' && (
-                        <li className="flex items-start gap-2">
-                          <Heart className="h-5 w-5 text-insura-teal flex-shrink-0 mt-0.5" />
-                          <span>Covers pre-existing conditions with favorable terms</span>
-                        </li>
-                      )}
-                      {userInfo.isSmoker === 'yes' && activeTab === 'life' && (
-                        <li className="flex items-start gap-2">
-                          <Cigarette className="h-5 w-5 text-insura-teal flex-shrink-0 mt-0.5" />
-                          <span>Offers reasonable rates for smokers</span>
-                        </li>
-                      )}
-                      {userInfo.drivingRecord !== 'clean' && activeTab === 'auto' && (
-                        <li className="flex items-start gap-2">
-                          <Car className="h-5 w-5 text-insura-teal flex-shrink-0 mt-0.5" />
-                          <span>Provides good coverage despite driving history</span>
-                        </li>
-                      )}
-                      {Number(userInfo.familySize) > 1 && (
-                        <li className="flex items-start gap-2">
-                          <Users className="h-5 w-5 text-insura-teal flex-shrink-0 mt-0.5" />
-                          <span>Suitable for your family size of {userInfo.familySize}</span>
-                        </li>
-                      )}
-                      <li className="flex items-start gap-2">
-                        <Activity className="h-5 w-5 text-insura-teal flex-shrink-0 mt-0.5" />
-                        <span>Tailored to your age and specific requirements</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                
-                <div className="mt-6 flex gap-4">
-                  <Button 
-                    onClick={() => handleViewPolicy(recommendedPlan)}
-                    className="bg-gradient-to-r from-insura-blue to-insura-teal hover:opacity-90 transition-opacity"
-                  >
-                    <FileText className="mr-2 h-4 w-4" />
-                    View Policy Details
-                  </Button>
-                  <Button variant="outline">
-                    Request Quote
-                  </Button>
-                </div>
-              </div>
-              
-              <h3 className="text-xl font-medium mt-8 mb-4">Other Plans You Might Consider</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {plans
-                  .filter(plan => plan.id !== recommendedPlan.id)
-                  .slice(0, 4)
-                  .map(plan => (
-                    <Card key={plan.id} className="hover:shadow-md transition-shadow">
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <CardTitle className="text-lg">{plan.providerName}</CardTitle>
-                            <CardDescription>{plan.name}</CardDescription>
-                          </div>
-                          <div className="text-lg font-bold">
-                            ${plan.price}<span className="text-xs font-normal text-muted-foreground">/mo</span>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="pb-2">
-                        <ul className="space-y-1">
-                          {plan.features.slice(0, 3).map((feature: string, i: number) => (
-                            <li key={i} className="flex items-start gap-2">
-                              <Check className="h-4 w-4 text-insura-blue flex-shrink-0 mt-0.5" />
-                              <span className="text-sm">{feature}</span>
-                            </li>
-                          ))}
-                          {plan.features.length > 3 && (
-                            <li className="text-xs text-center text-muted-foreground pt-1">
-                              +{plan.features.length - 3} more features
-                            </li>
-                          )}
-                        </ul>
-                      </CardContent>
-                      <CardFooter>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="w-full"
-                          onClick={() => handleViewPolicy(plan)}
-                        >
-                          <FileText className="mr-2 h-4 w-4" />
-                          View Policy
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  ))}
+                <RecommendationResults 
+                  recommendations={recommendations}
+                  onViewPolicy={handleViewPolicy}
+                />
               </div>
             </div>
-          ) : (
-            <div className="border rounded-lg p-8 text-center">
-              <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-medium mb-2">Find Your Perfect Insurance Plan</h3>
-              <p className="text-muted-foreground max-w-md mx-auto mb-6">
-                Fill in your details and preferences on the left, then click "Find Best Plan" to get personalized recommendations.
-              </p>
-              <div className="flex justify-center gap-3">
-                {insuranceTypes.map((type) => (
-                  <ChipBadge 
-                    key={type.id} 
-                    variant={type.id === activeTab ? "default" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => setActiveTab(type.id)}
-                  >
-                    {type.label}
-                  </ChipBadge>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+          </FadeIn>
+        )}
       </div>
       
       {showPolicyModal && selectedPolicy && (
         <PolicyDetailsModal 
-          policy={selectedPolicy} 
+          policy={selectedPolicy}
+          details={policyDetails}
+          isLoading={isPolicyLoading}
           isOpen={showPolicyModal}
           onClose={() => setShowPolicyModal(false)}
         />

@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 
 // Mock data for insurance providers (to be replaced with actual API/scraping)
@@ -227,6 +226,168 @@ export const scrapeProviderWebsite = async (url: string): Promise<ApiResponse> =
     return {
       success: false,
       error: 'Failed to scrape website data. Please try again later.'
+    };
+  }
+};
+
+export interface UserPreferences {
+  type: string;
+  coverageLevel: number;
+  budget?: number;
+  familySize?: number;
+  age?: number;
+  preExistingConditions?: string[];
+  smokingStatus?: string;
+  drivingRecord?: string;
+  propertyValue?: number;
+  priorities?: string[];
+}
+
+export const getPersonalizedRecommendations = async (preferences: UserPreferences): Promise<ApiResponse> => {
+  try {
+    console.log('Requesting recommendations with preferences:', preferences);
+    
+    // In a real implementation, this would call an external API or ML model
+    // Example API call (commented out):
+    /*
+    const response = await axios.post('https://api.insurance-recommender.com/recommend', {
+      preferences,
+      apiKey: 'your-api-key'
+    });
+    return {
+      success: true,
+      data: response.data
+    };
+    */
+    
+    // For demonstration, we'll use our mock data with more sophisticated filtering
+    const { type, coverageLevel, budget, familySize, age, preExistingConditions,
+            smokingStatus, drivingRecord, propertyValue, priorities } = preferences;
+    
+    // Get all plans of the requested type
+    const allPlans = insuranceProviders.flatMap(provider => {
+      const providerPlans = provider.plans.filter(plan => plan.type === type);
+      return providerPlans.map(plan => ({
+        ...plan,
+        providerName: provider.name,
+        providerId: provider.id,
+        matchScore: 0 // Initialize match score
+      }));
+    });
+    
+    // Apply recommendation algorithm
+    const recommendedPlans = allPlans.map(plan => {
+      let matchScore = 0;
+      const maxScore = 100;
+      
+      // Base match on coverage level (0-100)
+      if (coverageLevel <= 30) {
+        // Prefer basic plans for low coverage
+        matchScore += plan.name.toLowerCase().includes('basic') ? 30 : 15;
+      } else if (coverageLevel <= 70) {
+        // Prefer standard/plus plans for medium coverage
+        matchScore += (plan.name.toLowerCase().includes('plus') || 
+                      plan.name.toLowerCase().includes('standard')) ? 30 : 15;
+      } else {
+        // Prefer premium plans for high coverage
+        matchScore += plan.name.toLowerCase().includes('premium') ? 30 : 15;
+      }
+      
+      // Match on price/budget
+      if (budget) {
+        matchScore += plan.price <= budget ? 20 : Math.max(0, 20 - (plan.price - budget) / 10);
+      }
+      
+      // Match on feature count for family size
+      if (familySize && familySize > 1) {
+        matchScore += plan.features.length >= 4 ? 10 : 5;
+      }
+      
+      // Match on pre-existing conditions
+      if (preExistingConditions && preExistingConditions.length > 0) {
+        const hasCoverage = plan.features.some(feature => 
+          feature.toLowerCase().includes('comprehensive') || 
+          feature.toLowerCase().includes('pre-existing')
+        );
+        matchScore += hasCoverage ? 15 : 0;
+      }
+      
+      // Match on smoking status (for health insurance)
+      if (type === 'health' && smokingStatus === 'smoker') {
+        // Smokers need more comprehensive coverage
+        matchScore += plan.features.some(f => f.toLowerCase().includes('comprehensive')) ? 10 : 0;
+      }
+      
+      // Match on driving record (for auto insurance)
+      if (type === 'auto' && drivingRecord) {
+        if (drivingRecord === 'excellent') {
+          // Good drivers might prefer plans with discounts
+          matchScore += plan.features.some(f => f.toLowerCase().includes('discount')) ? 10 : 0;
+        } else if (drivingRecord === 'poor') {
+          // Poor drivers need more comprehensive coverage
+          matchScore += plan.features.some(f => f.toLowerCase().includes('comprehensive')) ? 10 : 0;
+        }
+      }
+      
+      // Match on property value (for home insurance)
+      if (type === 'home' && propertyValue) {
+        const valueThreshold = 500000; // Example threshold
+        if (propertyValue > valueThreshold) {
+          // More valuable homes need premium coverage
+          matchScore += plan.features.some(f => f.toLowerCase().includes('premium')) ? 10 : 0;
+        }
+      }
+      
+      // Prioritize based on user preferences
+      if (priorities && priorities.length > 0) {
+        const priorityMatchCount = priorities.filter(priority => 
+          plan.features.some(feature => feature.toLowerCase().includes(priority.toLowerCase()))
+        ).length;
+        
+        matchScore += (priorityMatchCount / priorities.length) * 15;
+      }
+      
+      // Cap the score at 100
+      matchScore = Math.min(matchScore, maxScore);
+      
+      return {
+        ...plan,
+        matchScore: Math.round(matchScore)
+      };
+    });
+    
+    // Sort by match score (highest first)
+    recommendedPlans.sort((a, b) => b.matchScore - a.matchScore);
+    
+    // Add explanation for each recommendation
+    const recommendationsWithExplanations = recommendedPlans.map(plan => {
+      let explanation = "";
+      
+      if (plan.matchScore >= 80) {
+        explanation = "Excellent match for your needs and preferences.";
+      } else if (plan.matchScore >= 60) {
+        explanation = "Good match for your requirements.";
+      } else if (plan.matchScore >= 40) {
+        explanation = "Moderate match - may meet your basic needs.";
+      } else {
+        explanation = "Limited match - may not fully address your requirements.";
+      }
+      
+      return {
+        ...plan,
+        explanation
+      };
+    });
+    
+    return {
+      success: true,
+      data: recommendationsWithExplanations.slice(0, 5) // Return top 5 recommendations
+    };
+  } catch (error) {
+    console.error('Error getting personalized recommendations:', error);
+    return {
+      success: false,
+      error: 'Failed to generate recommendations. Please try again later.'
     };
   }
 };

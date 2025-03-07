@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FadeIn } from "./ui/FadeIn";
@@ -45,7 +46,7 @@ export const RecommendationEngine: React.FC = () => {
                 </span>
               </h2>
               <p className="text-muted-foreground">
-                Tell us about your needs and our AI will analyze thousands of policies to find 
+                Tell us about your needs and our AI will analyze thousands of policies from the market to find 
                 the perfect match for your unique situation.
               </p>
               
@@ -55,8 +56,8 @@ export const RecommendationEngine: React.FC = () => {
                     <Brain className="w-5 h-5 text-insura-blue" />
                   </div>
                   <div>
-                    <div className="font-medium">Advanced AI</div>
-                    <div className="text-sm text-muted-foreground">Our algorithm analyzes your specific needs against thousands of insurance options.</div>
+                    <div className="font-medium">Market Analysis</div>
+                    <div className="text-sm text-muted-foreground">Our algorithm analyzes thousands of real market insurance options.</div>
                   </div>
                 </div>
                 
@@ -65,8 +66,8 @@ export const RecommendationEngine: React.FC = () => {
                     <Shield className="w-5 h-5 text-insura-teal" />
                   </div>
                   <div>
-                    <div className="font-medium">Privacy First</div>
-                    <div className="text-sm text-muted-foreground">Your information is encrypted and never shared with third parties without consent.</div>
+                    <div className="font-medium">Unbiased Analysis</div>
+                    <div className="text-sm text-muted-foreground">Get recommendations based on your needs, not commission rates.</div>
                   </div>
                 </div>
               </div>
@@ -92,7 +93,7 @@ export const RecommendationEngine: React.FC = () => {
                 >
                   <Link to="/insurance-finder">
                     <Search className="mr-2 h-4 w-4" />
-                    Try Our Advanced Insurance Finder
+                    Try Our Advanced Market Analyzer
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -188,9 +189,14 @@ export const RecommendationEngine: React.FC = () => {
                     </div>
                   </div>
                   
-                  <Button className="w-full bg-gradient-to-r from-insura-blue to-insura-teal hover:opacity-90 transition-opacity">
-                    View Your Recommendations
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                  <Button 
+                    asChild
+                    className="w-full bg-gradient-to-r from-insura-blue to-insura-teal hover:opacity-90 transition-opacity"
+                  >
+                    <Link to="/insurance-finder">
+                      View Your Recommendations
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
                   </Button>
                 </div>
               )}
