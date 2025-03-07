@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FadeIn } from "@/components/ui/FadeIn";
@@ -16,7 +15,7 @@ import {
   DollarSign,
   Users,
   Heart,
-  Smoking,
+  Cigarette,
   Car,
   Home,
   Star,
@@ -364,7 +363,7 @@ const InsuranceFinder: React.FC = () => {
                     {/* Smoking Status */}
                     <div className="space-y-4">
                       <div className="flex items-center gap-2">
-                        <Smoking className="h-5 w-5 text-insura-blue" />
+                        <Cigarette className="h-5 w-5 text-insura-blue" />
                         <h3 className="text-lg font-medium">Smoking Status</h3>
                       </div>
                       <div className="grid grid-cols-2 gap-3">
@@ -540,8 +539,6 @@ const InsuranceFinder: React.FC = () => {
       {showPolicyModal && selectedPolicy && (
         <PolicyDetailsModal 
           policy={selectedPolicy}
-          details={policyDetails}
-          isLoading={isPolicyLoading}
           isOpen={showPolicyModal}
           onClose={() => setShowPolicyModal(false)}
         />
