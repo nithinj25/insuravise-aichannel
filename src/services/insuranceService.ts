@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 
 // Mock data for insurance providers (to be replaced with actual API/scraping)
@@ -101,6 +100,174 @@ export const insuranceProviders = [
           'New car replacement'
         ],
         policyUrl: 'https://example.com/delta/policies/auto-premium.pdf'
+      }
+    ]
+  },
+  {
+    id: 'provider4',
+    name: 'HDFC ERGO',
+    website: 'https://www.hdfcergo.com',
+    plans: [
+      {
+        id: 'hdfc-health-my-health',
+        type: 'health',
+        name: 'My Health Suraksha',
+        price: 1200,
+        features: [
+          'Cashless treatment at 10,000+ network hospitals',
+          'No claim bonus up to 50%',
+          'Day care procedures covered',
+          'Pre and post hospitalization expenses',
+          'Cumulative bonus benefit'
+        ],
+        policyUrl: 'https://www.hdfcergo.com/health-insurance/health-suraksha'
+      },
+      {
+        id: 'hdfc-health-optima',
+        type: 'health',
+        name: 'Optima Secure',
+        price: 1800,
+        features: [
+          'Base sum insured + 100% automatic increase',
+          'Reserve benefit up to 50% of sum insured',
+          'Secure benefit with no claim deduction',
+          'Reload benefit for unrelated illnesses',
+          'Premium discount on policy renewal'
+        ],
+        policyUrl: 'https://www.hdfcergo.com/health-insurance/optima-secure'
+      },
+      {
+        id: 'hdfc-auto-comprehensive',
+        type: 'auto',
+        name: 'Comprehensive Car Insurance',
+        price: 5000,
+        features: [
+          'Own damage and third-party liability coverage',
+          'Personal accident cover of ₹15 lakhs',
+          'Zero depreciation cover',
+          'Roadside assistance',
+          '24/7 claim assistance'
+        ],
+        policyUrl: 'https://www.hdfcergo.com/motor-insurance/car-insurance'
+      }
+    ]
+  },
+  {
+    id: 'provider5',
+    name: 'ICICI Lombard',
+    website: 'https://www.icicilombard.com',
+    plans: [
+      {
+        id: 'icici-health-complete',
+        type: 'health',
+        name: 'Complete Health Insurance',
+        price: 1500,
+        features: [
+          'Coverage up to ₹50 lakhs',
+          'Cashless hospitalization at 6500+ network hospitals',
+          'No claim bonus up to 50%',
+          'Free health check-up',
+          'AYUSH treatment coverage'
+        ],
+        policyUrl: 'https://www.icicilombard.com/health-insurance/complete-health-insurance'
+      },
+      {
+        id: 'icici-health-corona',
+        type: 'health',
+        name: 'Corona Kavach Policy',
+        price: 800,
+        features: [
+          'Coverage for COVID-19 hospitalization',
+          'Home care treatment expenses',
+          'AYUSH treatment coverage',
+          'Pre and post hospitalization expenses',
+          'Ambulance charges'
+        ],
+        policyUrl: 'https://www.icicilombard.com/health-insurance/corona-kavach-policy'
+      },
+      {
+        id: 'icici-auto-basic',
+        type: 'auto',
+        name: 'Two-Wheeler Insurance',
+        price: 1200,
+        features: [
+          'Comprehensive coverage for bike damage',
+          'Third-party liability cover',
+          'Personal accident cover',
+          'Zero depreciation add-on',
+          'Roadside assistance'
+        ],
+        policyUrl: 'https://www.icicilombard.com/motor-insurance/two-wheeler-insurance'
+      }
+    ]
+  },
+  {
+    id: 'provider6',
+    name: 'Star Health',
+    website: 'https://www.starhealth.in',
+    plans: [
+      {
+        id: 'star-health-family',
+        type: 'health',
+        name: 'Family Health Optima',
+        price: 2000,
+        features: [
+          'Floater cover for entire family',
+          'Auto recharge of sum insured',
+          'Coverage for day care procedures',
+          'No medical check-up up to 50 years',
+          'Cumulative bonus of 10% every claim-free year'
+        ],
+        policyUrl: 'https://www.starhealth.in/health-insurance/family-health-optima-insurance'
+      },
+      {
+        id: 'star-health-senior',
+        type: 'health',
+        name: 'Senior Citizens Red Carpet',
+        price: 2500,
+        features: [
+          'Designed for senior citizens (60-75 years)',
+          'Pre-existing diseases covered after 1 year',
+          'Automatic restoration of basic sum insured',
+          'Organ donor expenses',
+          'Coverage for modern treatments'
+        ],
+        policyUrl: 'https://www.starhealth.in/health-insurance/senior-citizen-red-carpet'
+      }
+    ]
+  },
+  {
+    id: 'provider7',
+    name: 'Bajaj Allianz',
+    website: 'https://www.bajajallianz.com',
+    plans: [
+      {
+        id: 'bajaj-health-care',
+        type: 'health',
+        name: 'Health Guard',
+        price: 1350,
+        features: [
+          'In-patient hospitalization coverage',
+          'Pre and post hospitalization expenses',
+          'Road ambulance charges',
+          'Free health check-up every 3 years',
+          'Bariatric surgery coverage'
+        ],
+        policyUrl: 'https://www.bajajallianz.com/health-insurance-plans/health-guard.html'
+      },
+      {
+        id: 'bajaj-auto-private',
+        type: 'auto',
+        name: 'Private Car Package Policy',
+        price: 4500,
+        features: [
+          'Comprehensive coverage for car damages',
+          'Third-party legal liability',
+          'Personal accident cover for owner-driver',
+          'Engine protection cover',
+          '24/7 spot assistance'
+        ],
+        policyUrl: 'https://www.bajajallianz.com/motor-insurance/car-insurance.html'
       }
     ]
   }
@@ -475,54 +642,34 @@ export const getAIChatResponse = async (userMessage: string, context?: string): 
     const userMessageLower = userMessage.toLowerCase();
     
     // Check if this is related to the insurance finder tool
-    const isInsuranceFinderRelated = context === 'insurance-finder' || 
-                                    userMessageLower.includes('finder') || 
-                                    userMessageLower.includes('form') || 
-                                    userMessageLower.includes('recommendation');
+    const isInsuranceFinder = context === 'insurance-finder' || 
+                              userMessageLower.includes('finder') || 
+                              userMessageLower.includes('form') || 
+                              userMessageLower.includes('recommendation');
     
-    if (isInsuranceFinderRelated) {
-      if (userMessageLower.includes('how') && 
-          (userMessageLower.includes('work') || userMessageLower.includes('use'))) {
-        response = "To use our insurance finder, simply fill in your details including insurance type, coverage needs, and budget. Our AI analyzes thousands of policies to find the best matches specifically for your situation. The match score shows how well each recommendation aligns with your stated preferences. The higher the percentage, the more tailored the policy is to your needs.";
-      } else if (userMessageLower.includes('match') && userMessageLower.includes('score')) {
-        response = "The match score represents how well a policy aligns with your specific needs on a scale of 0-100%. It's calculated using a sophisticated algorithm that considers several factors:\n\n• How closely the coverage level matches your preference (35%)\n• How well the price fits your budget (25%)\n• The relevance of the policy features (20%)\n• How well it fits your demographic profile (10%)\n• How it addresses your stated priorities (10%)\n\nA score above 80% indicates an excellent match that meets most or all of your requirements.";
-      } else if (userMessageLower.includes('recommendation') || userMessageLower.includes('suggest')) {
-        response = "Our recommendations are powered by an AI algorithm that analyzes your inputs against thousands of policies. We consider multiple factors including coverage level, price point, specific features, and your stated priorities. Each recommendation includes a detailed explanation of why it might be suitable for you, along with a match score. I suggest focusing on policies with match scores above 70% for the best experience.";
-      } else if (userMessageLower.includes('coverage level') || userMessageLower.includes('coverage')) {
-        response = "The coverage level slider lets you indicate how comprehensive you want your insurance to be. A lower setting (0-30%) prioritizes basic, more affordable plans with essential coverage. A middle setting (40-70%) balances coverage and cost with standard plans. A higher setting (80-100%) prioritizes premium plans with comprehensive coverage, which typically cost more but provide better protection and additional benefits.";
-      } else if (userMessageLower.includes('budget') || userMessageLower.includes('cost') || userMessageLower.includes('price')) {
-        response = "Setting your monthly budget helps our AI find insurance options that fit your financial constraints. It's one of the most heavily weighted factors in our algorithm. Be realistic but also consider that extremely low budgets might limit your options. Insurance with higher deductibles typically costs less per month but means you'll pay more out-of-pocket when you need to use it.";
-      } else if (userMessageLower.includes('priority') || userMessageLower.includes('important')) {
-        response = "Your priorities help our algorithm understand what matters most to you in an insurance policy. You can select up to 3 priorities, such as low price, coverage breadth, provider network, or low deductible. Each selected priority influences the recommendation algorithm to favor plans that specifically address these concerns. This ensures the recommended policies align with what you value most.";
+    if (isInsuranceFinder) {
+      // Add specific responses for Indian insurance context
+      if (userMessageLower.includes('india') || userMessageLower.includes('indian') || userMessageLower.includes('rupee') || userMessageLower.includes('inr')) {
+        response = "We offer comprehensive recommendations for Indian insurance policies from providers like HDFC ERGO, ICICI Lombard, Star Health, and Bajaj Allianz. All prices are shown in Indian Rupees (₹). Indian insurance policies typically have unique features like No Claim Bonus, coverage for AYUSH treatments, and specific regulations governed by IRDAI (Insurance Regulatory and Development Authority of India).";
+      } else if (userMessageLower.includes('lakhs') || userMessageLower.includes('crore')) {
+        response = "In Indian insurance policies, coverage amounts are typically expressed in lakhs or crores. 1 lakh = ₹100,000 and 1 crore = ₹10,000,000. Most health insurance policies offer coverage ranging from ₹3 lakhs to ₹1 crore, depending on your needs and premium budget. For optimal protection, experts recommend a minimum cover of ₹10 lakhs for a family health insurance policy.";
+      } else if (userMessageLower.includes('irdai') || userMessageLower.includes('regulatory')) {
+        response = "IRDAI (Insurance Regulatory and Development Authority of India) is the regulatory body that supervises the insurance industry in India. All legitimate insurance providers must be registered with IRDAI. This regulatory oversight ensures that insurance companies maintain financial stability and treat policyholders fairly. Always verify that your insurance provider is IRDAI registered for your financial security.";
+      } else if (userMessageLower.includes('gst') || userMessageLower.includes('tax')) {
+        response = "Insurance premiums in India are subject to 18% GST. However, there are tax benefits available under Section 80D of the Income Tax Act for health insurance premiums. You can claim deductions of up to ₹25,000 for self and family (excluding parents), and an additional ₹25,000 for parents. For senior citizens, the deduction limit is ₹50,000. Life insurance premiums can qualify for deductions under Section 80C up to ₹1.5 lakhs.";
+      } else if (userMessageLower.includes('cashless') || userMessageLower.includes('network hospital')) {
+        response = "Cashless treatment is a significant benefit of health insurance in India. When you get treated at a network hospital, the insurer settles the bill directly with the hospital, eliminating the need for you to pay upfront. Most major Indian insurers have extensive networks - HDFC ERGO has 10,000+ network hospitals, ICICI Lombard has 6,500+, and Star Health has 9,900+ across India. Always check if your preferred hospitals are in your insurer's network before finalizing a policy.";
       } else {
-        response = "I can help you navigate our insurance finder tool. You can ask me about how the matching algorithm works, what the coverage levels mean, how to set your budget, or what your priorities should be. I'm also happy to explain insurance concepts or provide guidance on selecting the right policy for your needs.";
-      }
-    } else {
-      // General insurance questions
-      if (userMessageLower.includes('premium') || userMessageLower.includes('cost')) {
-        response = "Insurance premiums are the regular payments you make to maintain your coverage. Several factors affect your premium:\n\n• The type and amount of coverage you choose\n• Your deductible amount (higher deductibles generally mean lower premiums)\n• Your personal risk factors (age, health, driving record, etc.)\n• The value of what you're insuring (home, car, etc.)\n• Your location and its associated risks\n• Your claims history\n\nInsurers use complex statistical models to determine the likelihood you'll file a claim and price your premium accordingly.";
-      } else if (userMessageLower.includes('deductible')) {
-        response = "A deductible is the amount you pay out-of-pocket before your insurance starts covering costs. For example, with a $1,000 deductible, if you have a $5,000 claim, you pay the first $1,000 and your insurance covers the remaining $4,000.\n\nHigher deductibles typically result in lower premium payments but mean you'll pay more when you file a claim. Lower deductibles mean higher premiums but less financial burden at claim time.\n\nWhen choosing a deductible, consider your financial situation, risk tolerance, and how likely you are to file claims.";
-      } else if (userMessageLower.includes('claim')) {
-        response = "To file an insurance claim effectively:\n\n1. Document everything immediately (photos, videos, police reports if applicable)\n2. Contact your insurance provider as soon as possible\n3. Provide all requested information accurately and completely\n4. Keep detailed records of all communications\n5. Follow up regularly on your claim status\n6. Understand the appeals process if your claim is denied\n\nClaims typically take 2-6 weeks to process depending on complexity, though some may resolve faster or take longer. Be aware that filing claims, especially multiple claims, may affect your future premium rates.";
-      } else if (userMessageLower.includes('coverage') || userMessageLower.includes('covered')) {
-        response = "Insurance coverage defines exactly what your policy will pay for. Coverage varies by policy type:\n\n• Health insurance: Medical services, hospital stays, prescriptions, and sometimes dental/vision care\n• Auto insurance: Liability (legal obligations), collision (vehicle damage from accidents), comprehensive (non-accident damage)\n• Home insurance: Dwelling (structure), personal property, liability, additional living expenses\n• Life insurance: Death benefit, and sometimes cash value accumulation\n\nIt's crucial to understand both what is covered AND what is excluded in your policy. Exclusions are specific situations or items that your policy will not cover under any circumstances.";
-      } else if (userMessageLower.includes('term') || userMessageLower.includes('whole life')) {
-        response = "Term life insurance provides coverage for a specific period (10, 20, 30 years) with lower premiums. If you die during the term, your beneficiaries receive the death benefit. If you outlive the term, the coverage ends with no value.\n\nWhole life insurance covers your entire lifetime and includes a cash value component that grows over time. It's significantly more expensive than term insurance but provides lifetime coverage and can function as a form of forced savings.\n\nMost financial experts recommend term insurance for most people due to its affordability, allowing you to invest the difference elsewhere for potentially better returns.";
-      } else {
-        response = "I can help explain insurance concepts, policy details, and coverage options. You can ask me about premiums, deductibles, claims processes, coverage types, or specific insurance products like term life vs. whole life insurance. What specific insurance topic would you like to learn more about?";
-      }
-    }
-    
-    return {
-      success: true,
-      data: response
-    };
-  } catch (error) {
-    console.error('Error getting AI chat response:', error);
-    return {
-      success: false,
-      error: 'Unable to generate a response. Please try again later.'
-    };
-  }
-};
+        // General insurance questions with Indian context
+        if (userMessageLower.includes('premium') || userMessageLower.includes('cost')) {
+          response = "Insurance premiums are the regular payments you make to maintain your coverage. Several factors affect your premium:\n\n• The type and amount of coverage you choose\n• Your deductible amount (higher deductibles generally mean lower premiums)\n• Your personal risk factors (age, health, driving record, etc.)\n• The value of what you're insuring (home, car, etc.)\n• Your location and its associated risks\n• Your claims history\n\nInsurers use complex statistical models to determine the likelihood you'll file a claim and price your premium accordingly.";
+        } else if (userMessageLower.includes('deductible')) {
+          response = "A deductible is the amount you pay out-of-pocket before your insurance starts covering costs. For example, with a $1,000 deductible, if you have a $5,000 claim, you pay the first $1,000 and your insurance covers the remaining $4,000.\n\nHigher deductibles typically result in lower premium payments but mean you'll pay more when you file a claim. Lower deductibles mean higher premiums but less financial burden at claim time.\n\nWhen choosing a deductible, consider your financial situation, risk tolerance, and how likely you are to file claims.";
+        } else if (userMessageLower.includes('claim')) {
+          response = "To file an insurance claim effectively:\n\n1. Document everything immediately (photos, videos, police reports if applicable)\n2. Contact your insurance provider as soon as possible\n3. Provide all requested information accurately and completely\n4. Keep detailed records of all communications\n5. Follow up regularly on your claim status\n6. Understand the appeals process if your claim is denied\n\nClaims typically take 2-6 weeks to process depending on complexity, though some may resolve faster or take longer. Be aware that filing claims, especially multiple claims, may affect your future premium rates.";
+        } else if (userMessageLower.includes('coverage') || userMessageLower.includes('covered')) {
+          response = "Insurance coverage defines exactly what your policy will pay for. Coverage varies by policy type:\n\n• Health insurance: Medical services, hospital stays, prescriptions, and sometimes dental/vision care\n• Auto insurance: Liability (legal obligations), collision (vehicle damage from accidents), comprehensive (non-accident damage)\n• Home insurance: Dwelling (structure), personal property, liability, additional living expenses\n• Life insurance: Death benefit, and sometimes cash value accumulation\n\nIt's crucial to understand both what is covered AND what is excluded in your policy. Exclusions are specific situations or items that your policy will not cover under any circumstances.";
+        } else if (userMessageLower.includes('term') || userMessageLower.includes('whole life')) {
+          response = "Term life insurance provides coverage for a specific period (10, 20, 30 years) with lower premiums. If you die during the term, your beneficiaries receive the death benefit. If you outlive the term, the coverage ends with no value.\n\nWhole life insurance covers your entire lifetime and includes a cash value component that grows over time. It's significantly more expensive than term insurance but provides lifetime coverage and can function as a form of forced savings.\n\nMost financial experts recommend term insurance for most people due to its affordability, allowing you to invest the difference elsewhere for potentially better returns.";
+       
+

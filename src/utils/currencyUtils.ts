@@ -23,3 +23,28 @@ export const convertUSDtoINR = (usdAmount: number): number => {
 export const formatINR = (amount: number): string => {
   return `₹${amount.toLocaleString('en-IN')}`;
 };
+
+/**
+ * Check if a price is likely in INR already (not requiring conversion)
+ * This is a heuristic - prices over 1000 are likely already in INR
+ * @param price Price to check
+ * @returns Boolean indicating if price is likely in INR
+ */
+export const isLikelyINR = (price: number): boolean => {
+  return price >= 1000; // Heuristic - prices over 1000 are likely already in INR
+};
+
+/**
+ * Format price appropriately - either convert from USD or use directly if already in INR
+ * @param price Price value
+ * @returns Formatted INR amount with symbol
+ */
+export const formatPrice = (price: number): string => {
+  if (isLikelyINR(price)) {
+    // Already in INR, don't convert
+    return formatINR(price);
+  } else {
+    // Convert from USD to INR
+    return formatINR(convertUSDtoINR(price));
+  }
+};

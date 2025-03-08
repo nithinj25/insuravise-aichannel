@@ -4,7 +4,7 @@ import { ChipBadge } from "./ui/ChipBadge";
 import { Button } from "@/components/ui/button";
 import { FileText, Check, AlertCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { convertUSDtoINR, formatINR } from "@/utils/currencyUtils";
+import { formatPrice } from "@/utils/currencyUtils";
 
 interface RecommendationResultsProps {
   recommendations: any[];
@@ -59,7 +59,7 @@ export const RecommendationResults: React.FC<RecommendationResultsProps> = ({
               </div>
               
               <div className="text-3xl font-bold mt-3">
-                {formatINR(convertUSDtoINR(plan.price))}<span className="text-sm font-normal text-muted-foreground">/mo</span>
+                {formatPrice(plan.price)}<span className="text-sm font-normal text-muted-foreground">/mo</span>
               </div>
             </div>
             
