@@ -26,8 +26,7 @@ import { getPersonalizedRecommendations, UserPreferences, summarizePolicyPdf } f
 import { PolicyDetailsModal } from "@/components/PolicyDetailsModal";
 import { RecommendationResults } from "@/components/RecommendationResults";
 import { ChatBox } from "@/components/ChatBox";
-
-// Removing the duplicate UserPreferences interface since we're importing it
+import { convertUSDtoINR, formatINR } from "@/utils/currencyUtils";
 
 const InsuranceFinder: React.FC = () => {
   const { toast } = useToast();
@@ -43,13 +42,13 @@ const InsuranceFinder: React.FC = () => {
   const [formData, setFormData] = useState<UserPreferences>({
     type: "health",
     coverageLevel: 50,
-    budget: 200,
+    budget: 200, // This is in USD
     familySize: 1,
     age: 30,
     preExistingConditions: [],
     smokingStatus: "non-smoker",
     drivingRecord: "good",
-    propertyValue: 300000,
+    propertyValue: 300000, // This is in USD
     priorities: []
   });
   
@@ -290,7 +289,7 @@ const InsuranceFinder: React.FC = () => {
                   </div>
                   <div className="px-4">
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="text-lg font-medium">${formData.budget}</span>
+                      <span className="text-lg font-medium">{formatINR(convertUSDtoINR(formData.budget))}</span>
                       <Slider
                         value={[formData.budget || 200]}
                         onValueChange={(value) => handleSliderChange('budget', value)}
@@ -420,7 +419,9 @@ const InsuranceFinder: React.FC = () => {
                     </div>
                     <div className="px-4">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className="text-lg font-medium whitespace-nowrap">${(formData.propertyValue || 300000).toLocaleString()}</span>
+                        <span className="text-lg font-medium whitespace-nowrap">
+                          {formatINR(convertUSDtoINR(formData.propertyValue || 300000))}
+                        </span>
                         <Slider
                           value={[formData.propertyValue || 300000]}
                           onValueChange={(value) => handleSliderChange('propertyValue', value)}
@@ -521,7 +522,7 @@ const InsuranceFinder: React.FC = () => {
                       {formData.type.charAt(0).toUpperCase() + formData.type.slice(1)} Insurance
                     </ChipBadge>
                     <ChipBadge variant="outline">
-                      Budget: ${formData.budget}/mo
+                      Budget: {formatINR(convertUSDtoINR(formData.budget))}/mo
                     </ChipBadge>
                     <ChipBadge variant="accent">
                       Coverage: {formData.coverageLevel}%
@@ -547,7 +548,6 @@ const InsuranceFinder: React.FC = () => {
         />
       )}
       
-      {/* Add the ChatBox component */}
       <ChatBox />
     </div>
   );

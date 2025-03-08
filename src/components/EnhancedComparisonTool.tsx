@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { FadeIn } from "./ui/FadeIn";
 import { AnimatedGradient } from "./ui/AnimatedGradient";
@@ -10,6 +9,7 @@ import { Check, X, AlertCircle, Download, FileText, Search, RefreshCw } from "lu
 import { useToast } from "@/components/ui/use-toast";
 import { fetchInsurancePlans } from "@/services/insuranceService";
 import { PolicyDetailsModal } from "./PolicyDetailsModal";
+import { convertUSDtoINR, formatINR } from "@/utils/currencyUtils";
 
 const insuranceTypes = [
   { id: "health", label: "Health" },
@@ -66,18 +66,16 @@ export const EnhancedComparisonTool: React.FC = () => {
     fetchPlans(activeTab);
   }, []);
 
-  // Generate recommended plan based on coverage level
   const getRecommendedPlan = () => {
     if (plans.length === 0) return null;
     
     const coverageValue = coverage[0];
-    // Simple algorithm: Recommend different plans based on coverage slider
     if (coverageValue <= 30) {
-      return plans[0]; // Basic plan
+      return plans[0];
     } else if (coverageValue <= 70) {
-      return plans.length > 1 ? plans[1] : plans[0]; // Standard plan
+      return plans.length > 1 ? plans[1] : plans[0];
     } else {
-      return plans.length > 2 ? plans[2] : plans[plans.length - 1]; // Premium plan
+      return plans.length > 2 ? plans[2] : plans[plans.length - 1];
     }
   };
 
@@ -167,6 +165,8 @@ export const EnhancedComparisonTool: React.FC = () => {
                           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                             {plans.slice(0, 3).map((plan, index) => {
                               const isRecommended = recommendedPlan && plan.id === recommendedPlan.id;
+                              const inrPrice = convertUSDtoINR(plan.price);
+                              
                               return (
                                 <div 
                                   key={plan.id} 
@@ -188,7 +188,7 @@ export const EnhancedComparisonTool: React.FC = () => {
                                     <h3 className="text-xl font-semibold">{plan.providerName}</h3>
                                     <p className="text-sm text-muted-foreground">{plan.name}</p>
                                     <div className="text-3xl font-bold mt-2">
-                                      ${plan.price}<span className="text-sm font-normal text-muted-foreground">/mo</span>
+                                      {formatINR(inrPrice)}<span className="text-sm font-normal text-muted-foreground">/mo</span>
                                     </div>
                                   </div>
                                   <ul className="space-y-2 mt-4">

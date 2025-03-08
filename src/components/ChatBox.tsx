@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,8 +50,8 @@ export const ChatBox = () => {
     // Add initial greeting if this is the first time opening
     if (!isOpen && messages.length === 0) {
       const greeting = isInsuranceFinder
-        ? "Hi there! I'm your InsuraBot assistant powered by AI. I can help you understand insurance policies, compare options, and complete this insurance finder form. What specific questions do you have about your insurance search?"
-        : "Hi there! I'm your InsuraBot assistant powered by AI. I can help explain insurance policies, coverage details, and insurance terminology. What would you like to know about insurance today?";
+        ? "Hi there! I'm your InsuraBot assistant powered by AI. I can help you understand insurance policies, compare options, and complete this insurance finder form. All prices are shown in Indian Rupees (₹). What specific questions do you have about your insurance search?"
+        : "Hi there! I'm your InsuraBot assistant powered by AI. I can help explain insurance policies, coverage details, and insurance terminology. All prices are shown in Indian Rupees (₹). What would you like to know about insurance today?";
       
       setMessages([
         {
@@ -186,7 +185,7 @@ export const ChatBox = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={isInsuranceFinder ? "Ask about insurance options, form help..." : "Ask about insurance terms, coverage..."}
+                placeholder={isInsuranceFinder ? "Ask about insurance options, pricing in INR..." : "Ask about insurance terms, coverage in INR..."}
                 className="flex-1"
                 disabled={isLoading}
               />
@@ -203,8 +202,8 @@ export const ChatBox = () => {
               <HelpCircle size={12} />
               <span>
                 {isInsuranceFinder 
-                  ? "Try asking: \"How does the match score work?\" or \"What coverage level should I choose?\""
-                  : "Try asking: \"What affects my premium?\" or \"How do insurance claims work?\""}
+                  ? "Try asking: \"How much is ₹20,000 coverage?\" or \"What coverage level should I choose?\""
+                  : "Try asking: \"What affects my premium in rupees?\" or \"How do insurance claims work?\""}
               </span>
             </div>
           </div>
