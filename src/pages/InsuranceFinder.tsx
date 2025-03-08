@@ -19,7 +19,8 @@ import {
   Car,
   Home,
   Star,
-  FileText
+  FileText,
+  Brain
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { getPersonalizedRecommendations, UserPreferences, summarizePolicyPdf } from "@/services/insuranceService";
@@ -27,6 +28,7 @@ import { PolicyDetailsModal } from "@/components/PolicyDetailsModal";
 import { RecommendationResults } from "@/components/RecommendationResults";
 import { ChatBox } from "@/components/ChatBox";
 import { convertUSDtoINR, formatINR } from "@/utils/currencyUtils";
+import { enhanceRecommendationsWithAI } from "@/utils/recommendationUtils";
 
 const InsuranceFinder: React.FC = () => {
   const { toast } = useToast();
@@ -38,21 +40,19 @@ const InsuranceFinder: React.FC = () => {
   const [policyDetails, setPolicyDetails] = useState<any>(null);
   const [isPolicyLoading, setIsPolicyLoading] = useState(false);
   
-  // Form state - using the imported UserPreferences interface
   const [formData, setFormData] = useState<UserPreferences>({
     type: "health",
     coverageLevel: 50,
-    budget: 200, // This is in USD
+    budget: 200,
     familySize: 1,
     age: 30,
     preExistingConditions: [],
     smokingStatus: "non-smoker",
     drivingRecord: "good",
-    propertyValue: 300000, // This is in USD
+    propertyValue: 300000,
     priorities: []
   });
   
-  // Pre-existing conditions options
   const preExistingConditionOptions = [
     { id: "diabetes", label: "Diabetes" },
     { id: "heart-disease", label: "Heart Disease" },
@@ -62,7 +62,6 @@ const InsuranceFinder: React.FC = () => {
     { id: "none", label: "None" }
   ];
   
-  // Priority options
   const priorityOptions = [
     { id: "price", label: "Low Price" },
     { id: "coverage", label: "Coverage Breadth" },
@@ -72,7 +71,6 @@ const InsuranceFinder: React.FC = () => {
     { id: "digital-tools", label: "Digital Tools" }
   ];
   
-  // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -81,7 +79,6 @@ const InsuranceFinder: React.FC = () => {
     }));
   };
   
-  // Handle slider changes
   const handleSliderChange = (name: string, value: number[]) => {
     setFormData(prev => ({
       ...prev,
@@ -89,10 +86,8 @@ const InsuranceFinder: React.FC = () => {
     }));
   };
   
-  // Handle checkbox changes for multi-select options
   const handleCheckboxChange = (category: string, id: string) => {
     setFormData(prev => {
-      // Special case for "none" in pre-existing conditions
       if (category === 'preExistingConditions') {
         if (id === 'none') {
           return {
@@ -114,7 +109,6 @@ const InsuranceFinder: React.FC = () => {
           }
         }
       } else {
-        // For other multi-select categories like priorities
         const currentArray = prev[category as keyof UserPreferences] as string[] || [];
         if (currentArray.includes(id)) {
           return {
@@ -131,7 +125,6 @@ const InsuranceFinder: React.FC = () => {
     });
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -140,7 +133,8 @@ const InsuranceFinder: React.FC = () => {
       const response = await getPersonalizedRecommendations(formData);
       
       if (response.success) {
-        setRecommendations(response.data);
+        const enhancedRecommendations = enhanceRecommendationsWithAI(response.data, formData);
+        setRecommendations(enhancedRecommendations);
         setShowResults(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
@@ -162,12 +156,10 @@ const InsuranceFinder: React.FC = () => {
     }
   };
   
-  // Handle back button click
   const handleBackClick = () => {
     setShowResults(false);
   };
   
-  // Handle view policy details
   const handleViewPolicy = async (plan: any) => {
     setSelectedPolicy(plan);
     setShowPolicyModal(true);
@@ -235,7 +227,6 @@ const InsuranceFinder: React.FC = () => {
               </div>
               
               <form onSubmit={handleSubmit} className="p-6 space-y-8">
-                {/* Insurance Type */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Insurance Type</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -259,7 +250,6 @@ const InsuranceFinder: React.FC = () => {
                   </div>
                 </div>
                 
-                {/* Coverage Level */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="h-5 w-5 text-insura-blue" />
@@ -281,7 +271,6 @@ const InsuranceFinder: React.FC = () => {
                   </div>
                 </div>
                 
-                {/* Budget */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-5 w-5 text-insura-blue" />
@@ -302,7 +291,6 @@ const InsuranceFinder: React.FC = () => {
                   </div>
                 </div>
                 
-                {/* Personal Information */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Age</label>
@@ -332,10 +320,8 @@ const InsuranceFinder: React.FC = () => {
                   </div>
                 </div>
                 
-                {/* Conditional Fields Based on Insurance Type */}
                 {formData.type === "health" && (
                   <>
-                    {/* Pre-existing Conditions */}
                     <div className="space-y-4">
                       <h3 className="text-lg font-medium">Pre-existing Conditions</h3>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -362,7 +348,6 @@ const InsuranceFinder: React.FC = () => {
                       </div>
                     </div>
                     
-                    {/* Smoking Status */}
                     <div className="space-y-4">
                       <div className="flex items-center gap-2">
                         <Cigarette className="h-5 w-5 text-insura-blue" />
@@ -435,7 +420,6 @@ const InsuranceFinder: React.FC = () => {
                   </div>
                 )}
                 
-                {/* Priorities */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <Star className="h-5 w-5 text-insura-blue" />
@@ -470,7 +454,6 @@ const InsuranceFinder: React.FC = () => {
                   </div>
                 </div>
                 
-                {/* Additional Information */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Additional Information</h3>
                   <Textarea 
@@ -529,6 +512,15 @@ const InsuranceFinder: React.FC = () => {
                     </ChipBadge>
                   </div>
                 </div>
+                
+                {recommendations.length > 0 && (
+                  <div className="bg-gradient-to-r from-insura-blue/10 to-insura-teal/10 p-4 rounded-xl flex items-center gap-3 mb-2">
+                    <Brain className="h-5 w-5 text-insura-blue flex-shrink-0" />
+                    <p className="text-sm text-insura-blue">
+                      Our AI has ranked these options based on a {recommendations[0]?.matchScore || 0}% match to your specific needs and preferences.
+                    </p>
+                  </div>
+                )}
                 
                 <RecommendationResults 
                   recommendations={recommendations}

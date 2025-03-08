@@ -1,12 +1,14 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Bot, Send, X, MessageSquare, Loader2, FileText, HelpCircle } from "lucide-react";
+import { Bot, Send, X, MessageSquare, Loader2, FileText, HelpCircle, Brain } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useLocation } from "react-router-dom";
 import { getAIChatResponse } from "@/services/insuranceService";
+import { formatINR } from "@/utils/currencyUtils";
 
 // Define the type for a message
 interface Message {
@@ -61,6 +63,39 @@ export const ChatBox = () => {
           timestamp: new Date(),
         },
       ]);
+    }
+  };
+
+  // Generate a relevant suggestion based on current page
+  const getSuggestion = () => {
+    if (isInsuranceFinder) {
+      const suggestions = [
+        `How much is coverage worth ${formatINR(500000)} in health insurance?`,
+        "What factors affect my premium calculation?",
+        "Should I choose higher or lower deductibles?",
+        "How do I know which coverage level is right for me?",
+        "What does 'pre-existing condition' mean in health insurance?",
+        "How can I get the best price on auto insurance?",
+        "What's the difference between third-party and comprehensive insurance?"
+      ];
+      return suggestions[Math.floor(Math.random() * suggestions.length)];
+    } else {
+      const suggestions = [
+        "What is term insurance?",
+        "How do insurance claims work?",
+        "What are exclusions in an insurance policy?",
+        "How is my premium calculated?",
+        "What happens if I miss a payment?"
+      ];
+      return suggestions[Math.floor(Math.random() * suggestions.length)];
+    }
+  };
+
+  // Handle clicking on a suggestion
+  const handleSuggestionClick = (suggestion: string) => {
+    setInputValue(suggestion);
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
   };
 
@@ -176,6 +211,32 @@ export const ChatBox = () => {
             )}
             <div ref={messagesEndRef} />
           </div>
+          
+          {/* Suggestions */}
+          {messages.length <= 1 && !isLoading && (
+            <div className="p-3 border-t bg-gray-50">
+              <div className="flex items-center gap-1 mb-2 text-xs text-muted-foreground">
+                <Brain size={12} />
+                <span>Try asking me:</span>
+              </div>
+              <div className="grid grid-cols-1 gap-2">
+                <Button 
+                  variant="outline" 
+                  className="text-xs justify-start h-auto py-2 text-left"
+                  onClick={() => handleSuggestionClick(getSuggestion())}
+                >
+                  {getSuggestion()}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="text-xs justify-start h-auto py-2 text-left"
+                  onClick={() => handleSuggestionClick(getSuggestion())}
+                >
+                  {getSuggestion()}
+                </Button>
+              </div>
+            </div>
+          )}
           
           {/* Input area */}
           <div className="p-3 border-t bg-white">
