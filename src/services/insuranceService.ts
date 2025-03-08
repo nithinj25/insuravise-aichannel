@@ -671,5 +671,32 @@ export const getAIChatResponse = async (userMessage: string, context?: string): 
           response = "Insurance coverage defines exactly what your policy will pay for. Coverage varies by policy type:\n\n• Health insurance: Medical services, hospital stays, prescriptions, and sometimes dental/vision care\n• Auto insurance: Liability (legal obligations), collision (vehicle damage from accidents), comprehensive (non-accident damage)\n• Home insurance: Dwelling (structure), personal property, liability, additional living expenses\n• Life insurance: Death benefit, and sometimes cash value accumulation\n\nIt's crucial to understand both what is covered AND what is excluded in your policy. Exclusions are specific situations or items that your policy will not cover under any circumstances.";
         } else if (userMessageLower.includes('term') || userMessageLower.includes('whole life')) {
           response = "Term life insurance provides coverage for a specific period (10, 20, 30 years) with lower premiums. If you die during the term, your beneficiaries receive the death benefit. If you outlive the term, the coverage ends with no value.\n\nWhole life insurance covers your entire lifetime and includes a cash value component that grows over time. It's significantly more expensive than term insurance but provides lifetime coverage and can function as a form of forced savings.\n\nMost financial experts recommend term insurance for most people due to its affordability, allowing you to invest the difference elsewhere for potentially better returns.";
-       
-
+        } else {
+          response = "I can help you understand various aspects of insurance policies and recommend options based on your specific needs. You can ask me about policy types, coverage details, premium factors, claim processes, or specific insurance terms you'd like explained. I'm designed to make insurance concepts easy to understand and help you make informed decisions.";
+        }
+      }
+    } else {
+      // Generic insurance-related responses
+      if (userMessageLower.includes('hello') || userMessageLower.includes('hi') || userMessageLower.includes('hey')) {
+        response = "Hello! I'm your insurance assistant, here to help you understand policies, compare options, and make informed decisions. How can I assist you today?";
+      } else if (userMessageLower.includes('thank')) {
+        response = "You're welcome! I'm happy to help with any other insurance questions you might have.";
+      } else if (userMessageLower.includes('help')) {
+        response = "I'd be happy to help! You can ask me questions about different types of insurance policies, coverage details, how to file claims, or even get personalized policy recommendations based on your specific needs.";
+      } else {
+        response = "I'm your insurance assistant, designed to help with policy questions and recommendations. For the most accurate information, please ask specific questions about insurance types, coverage, claims, or policy features. I'm constantly learning to provide better assistance.";
+      }
+    }
+    
+    return {
+      success: true,
+      data: response
+    };
+  } catch (error) {
+    console.error('Error getting AI chat response:', error);
+    return {
+      success: false,
+      error: 'Failed to generate response. Please try again later.'
+    };
+  }
+};
