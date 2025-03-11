@@ -1,26 +1,26 @@
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { ChipBadge } from "@/components/ui/ChipBadge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
-import { Textarea } from "@/components/ui/textarea";
+import { ChipBadge } from "@/components/ui/ChipBadge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { ComparisonTool } from "@/components/ComparisonTool";
+import { EnhancedComparisonTool } from "@/components/EnhancedComparisonTool";
+import { RecommendationEngine } from "@/components/RecommendationEngine";
 import { 
-  ArrowLeft, 
-  Search, 
-  Loader2, 
-  CheckCircle2, 
-  ShieldCheck,
-  DollarSign,
-  Users,
-  Heart,
-  Cigarette,
-  Car,
-  Home,
-  Star,
-  FileText,
+  ArrowRight, 
+  BadgeCheck, 
+  BarChart3, 
+  Bot, 
+  Calculator, 
+  FileText, 
+  Heart, 
+  Home, 
+  Layers, 
+  Shield, 
+  Sparkles,
   Brain
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -29,8 +29,6 @@ import { UserPreferences } from "@/types/insurance";
 import { PolicyDetailsModal } from "@/components/PolicyDetailsModal";
 import { RecommendationResults } from "@/components/RecommendationResults";
 import { ChatBox } from "@/components/ChatBox";
-import { convertUSDtoINR, formatINR } from "@/utils/currencyUtils";
-import { enhanceRecommendationsWithAI } from "@/utils/recommendationUtils";
 
 const InsuranceFinder: React.FC = () => {
   const { toast } = useToast();
