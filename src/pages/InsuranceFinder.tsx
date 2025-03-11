@@ -6,11 +6,15 @@ import { ChipBadge } from "@/components/ui/ChipBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ComparisonTool } from "@/components/ComparisonTool";
 import { EnhancedComparisonTool } from "@/components/EnhancedComparisonTool";
 import { RecommendationEngine } from "@/components/RecommendationEngine";
 import { 
   ArrowRight, 
+  ArrowLeft,
   BadgeCheck, 
   BarChart3, 
   Bot, 
@@ -19,16 +23,26 @@ import {
   Heart, 
   Home, 
   Layers, 
-  Shield, 
+  Shield,
+  ShieldCheck,
   Sparkles,
-  Brain
+  Brain,
+  Users,
+  Car,
+  DollarSign,
+  CheckCircle2,
+  Cigarette,
+  Star,
+  Loader2,
+  Search
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { getPersonalizedRecommendations, summarizePolicyPdf } from "@/services/insuranceService";
+import { getPersonalizedRecommendations, summarizePolicyPdf, enhanceRecommendationsWithAI } from "@/services/insuranceService";
 import { UserPreferences } from "@/types/insurance";
 import { PolicyDetailsModal } from "@/components/PolicyDetailsModal";
 import { RecommendationResults } from "@/components/RecommendationResults";
 import { ChatBox } from "@/components/ChatBox";
+import { convertUSDtoINR, formatINR } from "@/utils/currencyUtils";
 
 const InsuranceFinder: React.FC = () => {
   const { toast } = useToast();
