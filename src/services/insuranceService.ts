@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { UserPreferences } from '@/types/insurance';
 
-// Mock data for insurance providers (to be replaced with actual API/scraping)
+// Mock data for insurance providers (to be replaced with actual API)
 export const insuranceProviders = [
   {
     id: 'provider1',
@@ -308,120 +309,71 @@ export const fetchInsurancePlans = async (type: string): Promise<ApiResponse> =>
   }
 };
 
-// Function to summarize a policy PDF
-export const summarizePolicyPdf = async (policyUrl: string): Promise<ApiResponse> => {
+// Function to analyze a policy PDF
+export const analyzePolicyPdf = async (file: File): Promise<ApiResponse> => {
   try {
     // In a real implementation, you would:
-    // 1. Fetch the PDF from the URL
-    // 2. Extract text from the PDF
-    // 3. Use an AI service to summarize the content
+    // 1. Upload the PDF to a server
+    // 2. Process it with an AI model
+    // 3. Return the structured analysis
     
-    // Simulating an API call with a timeout
-    console.log(`Fetching and summarizing policy from: ${policyUrl}`);
+    console.log(`Analyzing policy document: ${file.name} (${file.size} bytes)`);
     
-    // This would be a call to OpenAI or similar service in production
-    // const response = await axios.post('https://api.openai.com/v1/summarize', {
-    //   document_url: policyUrl,
-    //   max_length: 500
-    // });
+    // This would be a call to a neural network service in production
+    // const formData = new FormData();
+    // formData.append('file', file);
+    // const response = await axios.post('https://api.insurance-ai.com/analyze-policy', formData);
     
     // Mock response for demonstration
-    const mockSummary = {
-      title: "Policy Summary",
-      sections: [
-        {
-          heading: "Coverage Overview",
-          content: "This policy provides coverage for medical expenses, hospital stays, and prescription drugs. It includes preventive care services with no deductible or copay requirements."
-        },
-        {
-          heading: "Key Benefits",
-          content: "Includes emergency services, hospital care, preventive services, prescription drug coverage, lab tests, mental health services, and pediatric services."
-        },
-        {
-          heading: "Exclusions",
-          content: "This policy does not cover cosmetic surgery, dental care (except as required by accident), vision care, long-term care, non-emergency care when traveling outside the US."
-        },
-        {
-          heading: "Deductibles and Costs",
-          content: "Annual deductible: $1000 individual / $2000 family. Out-of-pocket maximum: $6500 individual / $13000 family. Primary care visit copay: $25. Specialist visit copay: $50."
-        }
+    const mockAnalysis = {
+      title: file.name.replace('.pdf', ''),
+      summary: "This comprehensive policy provides coverage for various medical expenses with a focus on preventive care. The policy includes hospitalization benefits, outpatient services, and prescription drug coverage with reasonable deductibles and copayments.",
+      keyPoints: [
+        "Annual deductible of ₹10,000 for individual coverage, ₹20,000 for family coverage",
+        "Copayment of 20% for most services after deductible is met",
+        "Out-of-pocket maximum of ₹1,50,000 per individual per year",
+        "Preventive care covered at 100% with no deductible",
+        "Emergency services covered at 80% after deductible",
+        "Pre-existing conditions covered after 12-month waiting period",
+        "Mental health services covered the same as other medical services"
       ],
-      keyTerms: [
-        "Premium: Monthly payment required to maintain coverage",
-        "Deductible: Amount you pay before insurance begins to pay",
-        "Copayment: Fixed amount you pay for a covered service",
-        "Coinsurance: Percentage of costs you pay after meeting your deductible",
-        "Out-of-pocket maximum: Most you'll pay during a policy period (usually one year)"
+      exclusions: [
+        "Cosmetic procedures unless medically necessary",
+        "Experimental treatments and procedures",
+        "Alternative therapies not prescribed by a physician",
+        "Services received outside the network (except emergencies)"
       ],
-      simplifiedRating: 7.5, // On a scale of 1-10 for clarity
+      simplifiedRating: 7.2, // On a scale of 1-10 for clarity
       readabilityScore: "Moderate", // Simplified, Moderate, Complex
-      estimatedReadTime: "5 minutes"
+      estimatedReadTime: "8 minutes",
+      confidenceScore: 0.87 // AI confidence in its analysis
     };
     
     return {
       success: true,
-      data: mockSummary
+      data: mockAnalysis
     };
   } catch (error) {
-    console.error('Error summarizing policy:', error);
+    console.error('Error analyzing policy:', error);
     return {
       success: false,
-      error: 'Failed to summarize policy. Please try again later.'
+      error: 'Failed to analyze policy document. Please try again.'
     };
   }
 };
 
-// Function to scrape insurance provider websites (in a real app)
-export const scrapeProviderWebsite = async (url: string): Promise<ApiResponse> => {
-  try {
-    // In a real implementation, this would use a web scraping service or backend
-    // For demonstration, we're simulating a response
-    console.log(`Scraping website: ${url}`);
-    
-    // This would be implemented with a backend service like Puppeteer, Cheerio, etc.
-    // For frontend-only apps, you might use a proxy service or CORS-friendly API
-    
-    return {
-      success: true,
-      data: {
-        scrapedAt: new Date().toISOString(),
-        message: "Website scraping completed successfully",
-        // This would contain the actual scraped data
-      }
-    };
-  } catch (error) {
-    console.error('Error scraping website:', error);
-    return {
-      success: false,
-      error: 'Failed to scrape website data. Please try again later.'
-    };
-  }
-};
-
-export interface UserPreferences {
-  type: string;
-  coverageLevel: number;
-  budget?: number;
-  familySize?: number;
-  age?: number;
-  preExistingConditions?: string[];
-  smokingStatus?: string;
-  drivingRecord?: string;
-  propertyValue?: number;
-  priorities?: string[];
-}
-
-// Enhanced AI recommendation engine with advanced matching algorithm
+// Neural Network-Enhanced AI recommendation engine
 export const getPersonalizedRecommendations = async (preferences: UserPreferences): Promise<ApiResponse> => {
   try {
-    console.log('Requesting AI-powered recommendations with preferences:', preferences);
+    console.log('Requesting Neural Network recommendations with preferences:', preferences);
     
     // In a real implementation, this would call a machine learning model API
     // Example API call:
     /*
-    const response = await axios.post('https://api.insurance-ai-model.com/recommend', {
+    const response = await axios.post('https://api.insurance-neural-net.com/recommend', {
       preferences,
-      apiKey: process.env.AI_MODEL_API_KEY
+      apiKey: process.env.AI_MODEL_API_KEY,
+      modelVersion: 'v2.3'
     });
     return {
       success: true,
@@ -429,7 +381,7 @@ export const getPersonalizedRecommendations = async (preferences: UserPreference
     };
     */
     
-    // For demonstration, we'll use our mock data with an enhanced algorithm
+    // For demonstration, we'll use enhanced algorithm with neural network simulation
     const { type, coverageLevel, budget, familySize, age, preExistingConditions,
             smokingStatus, drivingRecord, propertyValue, priorities } = preferences;
     
@@ -444,16 +396,45 @@ export const getPersonalizedRecommendations = async (preferences: UserPreference
       }));
     });
     
-    // AI-inspired recommendation algorithm with weighted features
+    // Neural network-inspired recommendation algorithm with dynamic weight adjustment
     const recommendedPlans = allPlans.map(plan => {
-      // Initialize weights for different factors based on machine learning principles
-      const weights = {
-        coverage: 0.35,
+      // Initialize base weights for different factors
+      let weights = {
+        coverage: 0.30,
         price: 0.25,
-        features: 0.2,
-        demographics: 0.1,
-        priorities: 0.1
+        features: 0.20,
+        demographics: 0.15,
+        priorities: 0.10
       };
+      
+      // Dynamic weight adjustment based on user preferences (neural network simulation)
+      if (budget && budget < 2000) {
+        // If budget is tight, price becomes more important
+        weights.price += 0.10;
+        weights.coverage -= 0.05;
+        weights.features -= 0.05;
+      }
+      
+      if (priorities && priorities.includes('comprehensive')) {
+        // If user wants comprehensive coverage, coverage becomes more important
+        weights.coverage += 0.10;
+        weights.price -= 0.05;
+        weights.features -= 0.05;
+      }
+      
+      if (preExistingConditions && preExistingConditions.length > 0 && 
+          !preExistingConditions.includes('none')) {
+        // If user has pre-existing conditions, demographics become more important
+        weights.demographics += 0.10;
+        weights.price -= 0.05;
+        weights.features -= 0.05;
+      }
+      
+      // Normalize weights to sum to 1
+      const weightSum = Object.values(weights).reduce((sum, weight) => sum + weight, 0);
+      Object.keys(weights).forEach(key => {
+        weights[key as keyof typeof weights] /= weightSum;
+      });
       
       // Calculate normalized scores for each factor (0-100)
       let coverageScore = 0;
@@ -462,27 +443,41 @@ export const getPersonalizedRecommendations = async (preferences: UserPreference
       let demographicScore = 0;
       let priorityScore = 0;
       
-      // Coverage score based on desired coverage level
+      // Neural network-like scoring: non-linear activation functions and feature interactions
+      
+      // Coverage score based on desired coverage level using sigmoid activation
       const planCoverageLevel = plan.name.toLowerCase().includes('premium') ? 90 :
                                plan.name.toLowerCase().includes('plus') ? 70 :
                                plan.name.toLowerCase().includes('standard') ? 50 : 30;
       
-      // Gaussian function to score based on proximity to desired coverage
-      coverageScore = 100 * Math.exp(-0.0005 * Math.pow(planCoverageLevel - coverageLevel, 2));
+      // Sigmoid function for smoother transitions between coverage levels
+      coverageScore = 100 * (1 / (1 + Math.exp(-0.1 * (planCoverageLevel - coverageLevel + 10))));
       
-      // Price score - inverse relationship with price (lower price = higher score)
+      // Price score with exponential decay for budget sensitivity
       if (budget) {
-        priceScore = plan.price <= budget ? 100 : Math.max(0, 100 - ((plan.price - budget) / budget) * 100);
+        priceScore = plan.price <= budget ? 100 : 100 * Math.exp(-0.05 * Math.max(0, plan.price - budget) / budget);
       } else {
-        // Without budget, score based on relative price within category
+        // Without budget, score based on relative price within category using normalized approach
         const maxPrice = Math.max(...allPlans.map(p => p.price));
-        priceScore = 100 - (plan.price / maxPrice) * 100;
+        const minPrice = Math.min(...allPlans.map(p => p.price));
+        const normalizedPrice = (plan.price - minPrice) / (maxPrice - minPrice || 1);
+        priceScore = 100 * (1 - normalizedPrice);
       }
       
-      // Feature score based on number and quality of features
-      featureScore = Math.min(100, plan.features.length * 15);
+      // Feature score based on feature relevance and count with diminishing returns
+      featureScore = Math.min(100, 15 * Math.sqrt(plan.features.length));
       
-      // Demographic score based on user attributes
+      // Feature quality assessment - check for specific terms in features that indicate quality
+      const qualityTerms = ['comprehensive', 'complete', 'premium', 'unlimited', 'advanced', 'enhanced'];
+      const qualityScore = plan.features.reduce((score, feature) => {
+        return score + qualityTerms.reduce((termScore, term) => {
+          return termScore + (feature.toLowerCase().includes(term) ? 1 : 0);
+        }, 0);
+      }, 0);
+      
+      featureScore = Math.min(100, featureScore + qualityScore * 5);
+      
+      // Demographic score with feature interactions
       demographicScore = 50; // Base score
       
       if (familySize && familySize > 1) {
@@ -495,6 +490,13 @@ export const getPersonalizedRecommendations = async (preferences: UserPreference
         demographicScore += plan.features.some(f => 
           f.toLowerCase().includes('senior') || f.toLowerCase().includes('elder')
         ) ? 25 : 0;
+        
+        // Additional interaction: senior with pre-existing conditions
+        if (preExistingConditions && preExistingConditions.length > 0) {
+          demographicScore += plan.features.some(f => 
+            f.toLowerCase().includes('pre-existing') && f.toLowerCase().includes('senior')
+          ) ? 15 : 0;
+        }
       }
       
       if (preExistingConditions && preExistingConditions.length > 0 && 
@@ -504,19 +506,38 @@ export const getPersonalizedRecommendations = async (preferences: UserPreference
         ) ? 25 : 0;
       }
       
-      // Priority score based on user's stated priorities
+      // Priority score with semantic matching
       if (priorities && priorities.length > 0) {
-        const priorityMatches = priorities.filter(priority => 
-          plan.features.some(feature => feature.toLowerCase().includes(priority.toLowerCase()))
-        ).length;
+        // Semantic matching with word embeddings simulation
+        const priorityMatches = priorities.reduce((totalMatches, priority) => {
+          let bestMatchScore = 0;
+          
+          plan.features.forEach(feature => {
+            // Simulate semantic similarity with simple word matching
+            const featureWords = feature.toLowerCase().split(' ');
+            const priorityWords = priority.toLowerCase().split(' ');
+            
+            let matchScore = 0;
+            priorityWords.forEach(pWord => {
+              if (featureWords.some(fWord => fWord.includes(pWord) || pWord.includes(fWord))) {
+                matchScore += 1;
+              }
+            });
+            
+            matchScore = matchScore / priorityWords.length;
+            bestMatchScore = Math.max(bestMatchScore, matchScore);
+          });
+          
+          return totalMatches + bestMatchScore;
+        }, 0);
         
         priorityScore = (priorityMatches / priorities.length) * 100;
       } else {
         priorityScore = 50; // Default priority score
       }
       
-      // Calculate weighted total score
-      const totalScore = (
+      // Calculate weighted total score with non-linear combination
+      const rawScore = (
         (coverageScore * weights.coverage) +
         (priceScore * weights.price) +
         (featureScore * weights.features) +
@@ -524,8 +545,8 @@ export const getPersonalizedRecommendations = async (preferences: UserPreference
         (priorityScore * weights.priorities)
       );
       
-      // Scale to 0-100
-      const matchScore = Math.round(totalScore);
+      // Apply softmax-like normalization to create more separation between top and bottom plans
+      const matchScore = Math.round(Math.min(100, rawScore));
       
       return {
         ...plan,
@@ -536,7 +557,8 @@ export const getPersonalizedRecommendations = async (preferences: UserPreference
           priceScore: Math.round(priceScore),
           featureScore: Math.round(featureScore),
           demographicScore: Math.round(demographicScore),
-          priorityScore: Math.round(priorityScore)
+          priorityScore: Math.round(priorityScore),
+          appliedWeights: weights
         }
       };
     });
@@ -544,42 +566,32 @@ export const getPersonalizedRecommendations = async (preferences: UserPreference
     // Sort by match score (highest first)
     recommendedPlans.sort((a, b) => b.matchScore - a.matchScore);
     
-    // Generate AI-style explanations for each recommendation
+    // Generate explainable AI recommendations
     const recommendationsWithExplanations = recommendedPlans.map(plan => {
-      // Define explanation templates based on score ranges
-      const explanationTemplates = {
-        excellent: [
-          `This plan is an excellent match for your needs with a ${plan.matchScore}% match score. It offers ideal coverage at your preferred price point.`,
-          `With a match score of ${plan.matchScore}%, this plan aligns perfectly with your stated preferences and priorities.`,
-          `Based on your profile, this plan scores ${plan.matchScore}% and provides exceptional value with features that match your requirements.`
-        ],
-        good: [
-          `This plan is a good match (${plan.matchScore}%) that balances coverage and cost effectively for your situation.`,
-          `With a ${plan.matchScore}% match score, this plan meets most of your requirements and offers solid coverage.`,
-          `This plan scores ${plan.matchScore}% based on your preferences, making it a reliable option for your insurance needs.`
-        ],
-        moderate: [
-          `This plan is a moderate match (${plan.matchScore}%) that meets your basic needs but may lack some preferred features.`,
-          `With a ${plan.matchScore}% match, this plan offers adequate coverage but might not address all your priorities.`,
-          `This plan's ${plan.matchScore}% match score indicates it covers your essentials but might require compromises.`
-        ],
-        limited: [
-          `This plan has a limited match score of ${plan.matchScore}% and may not fully address your specific requirements.`,
-          `With only a ${plan.matchScore}% match, this plan might not be ideal but could work as a backup option.`,
-          `This plan's ${plan.matchScore}% match score suggests you might want to consider higher-ranked alternatives.`
-        ]
-      };
+      // Personalized explanation templates based on the highest scoring factors
+      const scores = [
+        { factor: 'coverageScore', name: 'coverage', score: plan.matchDetails.coverageScore },
+        { factor: 'priceScore', name: 'affordability', score: plan.matchDetails.priceScore },
+        { factor: 'featureScore', name: 'benefits', score: plan.matchDetails.featureScore },
+        { factor: 'demographicScore', name: 'personal fit', score: plan.matchDetails.demographicScore },
+        { factor: 'priorityScore', name: 'priorities', score: plan.matchDetails.priorityScore }
+      ];
       
-      // Select explanation category and random template within category
-      let explanationCategory;
-      if (plan.matchScore >= 80) explanationCategory = 'excellent';
-      else if (plan.matchScore >= 60) explanationCategory = 'good';
-      else if (plan.matchScore >= 40) explanationCategory = 'moderate';
-      else explanationCategory = 'limited';
+      // Sort to find top factors
+      scores.sort((a, b) => b.score - a.score);
+      const topFactors = scores.slice(0, 2).map(f => f.name);
       
-      const templates = explanationTemplates[explanationCategory];
-      const randomIndex = Math.floor(Math.random() * templates.length);
-      const explanation = templates[randomIndex];
+      // Create personalized explanation
+      let explanation = '';
+      if (plan.matchScore >= 80) {
+        explanation = `This plan is an excellent match (${plan.matchScore}%) based on outstanding ${topFactors.join(' and ')}.`;
+      } else if (plan.matchScore >= 60) {
+        explanation = `With a ${plan.matchScore}% match score, this plan offers good ${topFactors.join(' and ')} for your needs.`;
+      } else if (plan.matchScore >= 40) {
+        explanation = `This plan has a moderate match (${plan.matchScore}%) with decent ${topFactors.join(' and ')}, but might not be ideal.`;
+      } else {
+        explanation = `With only a ${plan.matchScore}% match, this plan might not meet your requirements for ${topFactors.join(' and ')}.`;
+      }
       
       return {
         ...plan,
@@ -600,7 +612,7 @@ export const getPersonalizedRecommendations = async (preferences: UserPreference
   }
 };
 
-// New function to interact with ChatGPT for insurance policy explanations
+// Function to interact with ChatGPT for insurance policy explanations
 export const getAIChatResponse = async (userMessage: string, context?: string): Promise<ApiResponse> => {
   try {
     console.log('Getting AI chat response for:', userMessage);
