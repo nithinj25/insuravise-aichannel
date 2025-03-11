@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FadeIn } from "@/components/ui/FadeIn";
@@ -23,7 +24,8 @@ import {
   Brain
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { getPersonalizedRecommendations, UserPreferences, summarizePolicyPdf } from "@/services/insuranceService";
+import { getPersonalizedRecommendations, summarizePolicyPdf } from "@/services/insuranceService";
+import { UserPreferences } from "@/types/insurance";
 import { PolicyDetailsModal } from "@/components/PolicyDetailsModal";
 import { RecommendationResults } from "@/components/RecommendationResults";
 import { ChatBox } from "@/components/ChatBox";
