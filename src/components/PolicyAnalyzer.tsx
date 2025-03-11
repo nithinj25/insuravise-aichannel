@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FadeIn } from "./ui/FadeIn";
 import { ChipBadge } from "./ui/ChipBadge";
 import { Button } from "@/components/ui/button";
@@ -12,22 +12,45 @@ import {
   Brain,
   Upload,
   Download,
-  Check
+  Check,
+  AlertCircle
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { analyzePolicyPdf } from "@/services/insuranceService";
+import { PolicyAnalysis } from "@/types/insurance";
 
 export const PolicyAnalyzer: React.FC = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const [analysisResult, setAnalysisResult] = useState<PolicyAnalysis | null>(null);
   const [analysisProgress, setAnalysisProgress] = useState(0);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setUploadedFile(e.target.files[0]);
+      const file = e.target.files[0];
+      if (file.type !== 'application/pdf') {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload a PDF document",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        toast({
+          title: "File too large",
+          description: "Please upload a PDF smaller than 10MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setUploadedFile(file);
       setAnalysisResult(null);
+      setAnalysisError(null);
     }
   };
 
@@ -45,16 +68,20 @@ export const PolicyAnalyzer: React.FC = () => {
     
     setIsLoading(true);
     setAnalysisProgress(0);
+    setAnalysisError(null);
     
-    // Simulate progress
+    // Simulate initial loading progress
     const progressInterval = setInterval(() => {
-      setAnalysisProgress(prev => Math.min(prev + 10, 90));
-    }, 500);
+      setAnalysisProgress(prev => {
+        if (prev < 90) return prev + 5;
+        return prev;
+      });
+    }, 300);
     
     try {
       const response = await analyzePolicyPdf(uploadedFile);
       
-      if (response.success) {
+      if (response.success && response.data) {
         setAnalysisResult(response.data);
         setAnalysisProgress(100);
         toast({
@@ -62,6 +89,7 @@ export const PolicyAnalyzer: React.FC = () => {
           description: "Successfully analyzed policy document",
         });
       } else {
+        setAnalysisError(response.error || "Failed to analyze document");
         toast({
           title: "Error",
           description: response.error || "Failed to analyze document",
@@ -70,6 +98,7 @@ export const PolicyAnalyzer: React.FC = () => {
       }
     } catch (error) {
       console.error("Error in analyzing:", error);
+      setAnalysisError("An unexpected error occurred during analysis");
       toast({
         title: "Error",
         description: "An unexpected error occurred",
@@ -80,6 +109,50 @@ export const PolicyAnalyzer: React.FC = () => {
       setIsLoading(false);
       setAnalysisProgress(100);
     }
+  };
+
+  // Function to handle downloading the analysis as a PDF or text file
+  const handleDownloadAnalysis = () => {
+    if (!analysisResult) return;
+    
+    // Create a text representation of the analysis
+    let content = `# ${analysisResult.title}\n\n`;
+    content += `## Summary\n${analysisResult.summary}\n\n`;
+    
+    content += `## Key Points\n`;
+    analysisResult.keyPoints.forEach(point => {
+      content += `- ${point}\n`;
+    });
+    content += '\n';
+    
+    if (analysisResult.exclusions) {
+      content += `## Exclusions\n`;
+      analysisResult.exclusions.forEach(exclusion => {
+        content += `- ${exclusion}\n`;
+      });
+      content += '\n';
+    }
+    
+    content += `## Ratings\n`;
+    content += `- Simplified Rating: ${analysisResult.simplifiedRating}/10\n`;
+    content += `- Readability: ${analysisResult.readabilityScore}\n`;
+    content += `- Estimated Reading Time: ${analysisResult.estimatedReadTime}\n`;
+    
+    // Create a blob and download link
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'policy-analysis.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Downloaded",
+      description: "Analysis has been downloaded as a text file",
+    });
   };
 
   return (
@@ -187,6 +260,19 @@ export const PolicyAnalyzer: React.FC = () => {
                 </div>
               </div>
 
+              {analysisError && (
+                <Card className="p-4 mt-6 bg-red-50 border border-red-200">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h3 className="font-medium text-red-700">Analysis Error</h3>
+                      <p className="text-sm text-red-600 mt-1">{analysisError}</p>
+                      <p className="text-xs text-red-500 mt-2">Please ensure you've uploaded a valid PDF file and try again.</p>
+                    </div>
+                  </div>
+                </Card>
+              )}
+
               {analysisResult && (
                 <Card className="p-4 mt-6 bg-white border border-insura-blue/20">
                   <div className="flex justify-between items-center mb-4">
@@ -218,8 +304,25 @@ export const PolicyAnalyzer: React.FC = () => {
                       </ul>
                     </div>
                     
+                    {analysisResult.exclusions && analysisResult.exclusions.length > 0 && (
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <AlertCircle className="h-4 w-4 text-insura-blue" />
+                          <span className="text-sm font-medium">Exclusions</span>
+                        </div>
+                        <ul className="space-y-2">
+                          {analysisResult.exclusions.map((exclusion: string, index: number) => (
+                            <li key={index} className="text-sm flex gap-2">
+                              <AlertCircle className="h-4 w-4 text-orange-500 flex-shrink-0 mt-0.5" />
+                              <span>{exclusion}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    
                     <div className="pt-2 flex justify-end">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={handleDownloadAnalysis}>
                         <Download className="mr-2 h-4 w-4" />
                         Download Full Analysis
                       </Button>
