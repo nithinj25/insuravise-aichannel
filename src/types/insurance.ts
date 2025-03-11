@@ -48,4 +48,9 @@ export interface PolicyAnalysis {
   readabilityScore: string;
   estimatedReadTime: string;
   confidenceScore: number;
+  sections?: {
+    heading: string;
+    content: string;
+  }[];
+  keyTerms?: string[];
 }

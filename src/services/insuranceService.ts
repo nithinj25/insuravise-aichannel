@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { UserPreferences } from '@/types/insurance';
+import { UserPreferences, InsurancePlan, PolicyAnalysis } from '@/types/insurance';
 
 // Mock data for insurance providers (to be replaced with actual API)
 export const insuranceProviders = [
@@ -325,7 +325,7 @@ export const analyzePolicyPdf = async (file: File): Promise<ApiResponse> => {
     // const response = await axios.post('https://api.insurance-ai.com/analyze-policy', formData);
     
     // Mock response for demonstration
-    const mockAnalysis = {
+    const mockAnalysis: PolicyAnalysis = {
       title: file.name.replace('.pdf', ''),
       summary: "This comprehensive policy provides coverage for various medical expenses with a focus on preventive care. The policy includes hospitalization benefits, outpatient services, and prescription drug coverage with reasonable deductibles and copayments.",
       keyPoints: [
@@ -343,10 +343,35 @@ export const analyzePolicyPdf = async (file: File): Promise<ApiResponse> => {
         "Alternative therapies not prescribed by a physician",
         "Services received outside the network (except emergencies)"
       ],
-      simplifiedRating: 7.2, // On a scale of 1-10 for clarity
-      readabilityScore: "Moderate", // Simplified, Moderate, Complex
+      simplifiedRating: 7.2,
+      readabilityScore: "Moderate",
       estimatedReadTime: "8 minutes",
-      confidenceScore: 0.87 // AI confidence in its analysis
+      confidenceScore: 0.87,
+      sections: [
+        {
+          heading: "Coverage Summary",
+          content: "This policy provides comprehensive coverage for hospitalization, outpatient services, and prescription drugs with reasonable deductibles and copayments."
+        },
+        {
+          heading: "Eligibility & Enrollment",
+          content: "Individuals between 18-65 years are eligible. Pre-existing conditions are covered after a 12-month waiting period."
+        },
+        {
+          heading: "Benefits & Exclusions",
+          content: "Benefits include hospital stays, surgeries, diagnostics, and emergency services. Exclusions include cosmetic procedures, experimental treatments, and non-prescribed alternative therapies."
+        },
+        {
+          heading: "Claims Process",
+          content: "Claims must be submitted within 30 days of service. Cashless settlement is available at network hospitals, while reimbursement claims require itemized bills and documentation."
+        }
+      ],
+      keyTerms: [
+        "Premium: The amount paid to maintain coverage",
+        "Deductible: Amount you pay before insurance begins to pay",
+        "Co-payment: Fixed amount you pay for covered services",
+        "Network Provider: Healthcare providers contracted with the insurer",
+        "Pre-authorization: Approval required before certain procedures"
+      ]
     };
     
     return {
@@ -358,6 +383,79 @@ export const analyzePolicyPdf = async (file: File): Promise<ApiResponse> => {
     return {
       success: false,
       error: 'Failed to analyze policy document. Please try again.'
+    };
+  }
+};
+
+// Add the missing summarizePolicyPdf function
+export const summarizePolicyPdf = async (policyUrl: string): Promise<ApiResponse> => {
+  try {
+    console.log('Summarizing policy document from URL:', policyUrl);
+    
+    // In a real implementation, you would:
+    // 1. Download the PDF from the URL
+    // 2. Process it with an AI model
+    // 3. Return the structured analysis
+    
+    // Mock response for demonstration
+    const mockAnalysis: PolicyAnalysis = {
+      title: policyUrl.split('/').pop()?.replace('.pdf', '') || 'Policy Document',
+      summary: "This comprehensive policy provides coverage for various medical expenses with a focus on preventive care. The policy includes hospitalization benefits, outpatient services, and prescription drug coverage with reasonable deductibles and copayments.",
+      keyPoints: [
+        "Annual deductible of ₹10,000 for individual coverage, ₹20,000 for family coverage",
+        "Copayment of 20% for most services after deductible is met",
+        "Out-of-pocket maximum of ₹1,50,000 per individual per year",
+        "Preventive care covered at 100% with no deductible",
+        "Emergency services covered at 80% after deductible",
+        "Pre-existing conditions covered after 12-month waiting period",
+        "Mental health services covered the same as other medical services"
+      ],
+      exclusions: [
+        "Cosmetic procedures unless medically necessary",
+        "Experimental treatments and procedures",
+        "Alternative therapies not prescribed by a physician",
+        "Services received outside the network (except emergencies)"
+      ],
+      simplifiedRating: 7.2,
+      readabilityScore: "Moderate",
+      estimatedReadTime: "8 minutes",
+      confidenceScore: 0.87,
+      sections: [
+        {
+          heading: "Coverage Summary",
+          content: "This policy provides comprehensive coverage for hospitalization, outpatient services, and prescription drugs with reasonable deductibles and copayments."
+        },
+        {
+          heading: "Eligibility & Enrollment",
+          content: "Individuals between 18-65 years are eligible. Pre-existing conditions are covered after a 12-month waiting period."
+        },
+        {
+          heading: "Benefits & Exclusions",
+          content: "Benefits include hospital stays, surgeries, diagnostics, and emergency services. Exclusions include cosmetic procedures, experimental treatments, and non-prescribed alternative therapies."
+        },
+        {
+          heading: "Claims Process",
+          content: "Claims must be submitted within 30 days of service. Cashless settlement is available at network hospitals, while reimbursement claims require itemized bills and documentation."
+        }
+      ],
+      keyTerms: [
+        "Premium: The amount paid to maintain coverage",
+        "Deductible: Amount you pay before insurance begins to pay",
+        "Co-payment: Fixed amount you pay for covered services",
+        "Network Provider: Healthcare providers contracted with the insurer",
+        "Pre-authorization: Approval required before certain procedures"
+      ]
+    };
+    
+    return {
+      success: true,
+      data: mockAnalysis
+    };
+  } catch (error) {
+    console.error('Error summarizing policy:', error);
+    return {
+      success: false,
+      error: 'Failed to summarize policy document. Please try again.'
     };
   }
 };
@@ -676,7 +774,7 @@ export const getAIChatResponse = async (userMessage: string, context?: string): 
         if (userMessageLower.includes('premium') || userMessageLower.includes('cost')) {
           response = "Insurance premiums are the regular payments you make to maintain your coverage. Several factors affect your premium:\n\n• The type and amount of coverage you choose\n• Your deductible amount (higher deductibles generally mean lower premiums)\n• Your personal risk factors (age, health, driving record, etc.)\n• The value of what you're insuring (home, car, etc.)\n• Your location and its associated risks\n• Your claims history\n\nInsurers use complex statistical models to determine the likelihood you'll file a claim and price your premium accordingly.";
         } else if (userMessageLower.includes('deductible')) {
-          response = "A deductible is the amount you pay out-of-pocket before your insurance starts covering costs. For example, with a $1,000 deductible, if you have a $5,000 claim, you pay the first $1,000 and your insurance covers the remaining $4,000.\n\nHigher deductibles typically result in lower premium payments but mean you'll pay more when you file a claim. Lower deductibles mean higher premiums but less financial burden at claim time.\n\nWhen choosing a deductible, consider your financial situation, risk tolerance, and how likely you are to file claims.";
+          response = "A deductible is the amount you pay out-of-pocket before your insurance starts to pay. For example, with a $1,000 deductible, if you have a $5,000 claim, you pay the first $1,000 and your insurance covers the remaining $4,000.\n\nHigher deductibles typically result in lower premium payments but mean you'll pay more when you file a claim. Lower deductibles mean higher premiums but less financial burden at claim time.\n\nWhen choosing a deductible, consider your financial situation, risk tolerance, and how likely you are to file claims.";
         } else if (userMessageLower.includes('claim')) {
           response = "To file an insurance claim effectively:\n\n1. Document everything immediately (photos, videos, police reports if applicable)\n2. Contact your insurance provider as soon as possible\n3. Provide all requested information accurately and completely\n4. Keep detailed records of all communications\n5. Follow up regularly on your claim status\n6. Understand the appeals process if your claim is denied\n\nClaims typically take 2-6 weeks to process depending on complexity, though some may resolve faster or take longer. Be aware that filing claims, especially multiple claims, may affect your future premium rates.";
         } else if (userMessageLower.includes('coverage') || userMessageLower.includes('covered')) {

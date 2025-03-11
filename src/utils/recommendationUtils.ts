@@ -1,5 +1,5 @@
 
-import { UserPreferences } from "@/services/insuranceService";
+import { UserPreferences } from "@/types/insurance";
 
 /**
  * Constants for the AI recommendation engine
