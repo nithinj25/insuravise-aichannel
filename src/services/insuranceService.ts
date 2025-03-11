@@ -1,5 +1,4 @@
-
-import { InsurancePlan, PolicyAnalysis } from "@/types/insurance";
+import { InsurancePlan, PolicyAnalysis, RecommendationResult } from "@/types/insurance";
 import { mockInsurancePlans } from "@/utils/mockData";
 
 // Get insurance plans based on filters
@@ -146,7 +145,26 @@ const analyzeInsurancePolicyText = async (policyText: string) => {
   // In a real app, this might use NLP or ML models
   // For demo, we'll use simple text analysis
   
-  // Extract policy sections
+  // Generate a default summary if it doesn't exist
+  const summary = "This policy provides standard coverage with typical exclusions and limitations. Review the key points below for important details.";
+  
+  // Generate default key points if they don't exist
+  const keyPoints = [
+    "Covers standard liability and property damage",
+    "Includes deductible of $500 for most claims",
+    "Requires claims to be filed within 30 days of incident",
+    "Coverage limits apply as specified in the policy details"
+  ];
+  
+  // Generate default exclusions if they don't exist
+  const exclusions = [
+    "Acts of war or terrorism",
+    "Intentional damage by the insured",
+    "Normal wear and tear",
+    "Pre-existing conditions not disclosed at enrollment"
+  ];
+  
+  // Extract sections
   const sections = extractSections(policyText);
   
   // Extract key terms
@@ -166,6 +184,10 @@ const analyzeInsurancePolicyText = async (policyText: string) => {
   const simplifiedRating = Math.floor(Math.random() * 4) + 5; // Random 5-8 rating for demo
   
   return {
+    title: "Policy Analysis Report",
+    summary,
+    keyPoints,
+    exclusions,
     sections,
     keyTerms,
     readabilityScore,

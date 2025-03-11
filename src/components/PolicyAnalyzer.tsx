@@ -116,16 +116,18 @@ export const PolicyAnalyzer: React.FC = () => {
     if (!analysisResult) return;
     
     // Create a text representation of the analysis
-    let content = `# ${analysisResult.title}\n\n`;
-    content += `## Summary\n${analysisResult.summary}\n\n`;
+    let content = `# ${analysisResult.title || 'Policy Analysis'}\n\n`;
+    content += `## Summary\n${analysisResult.summary || 'No summary available.'}\n\n`;
     
-    content += `## Key Points\n`;
-    analysisResult.keyPoints.forEach(point => {
-      content += `- ${point}\n`;
-    });
-    content += '\n';
+    if (analysisResult.keyPoints && analysisResult.keyPoints.length > 0) {
+      content += `## Key Points\n`;
+      analysisResult.keyPoints.forEach(point => {
+        content += `- ${point}\n`;
+      });
+      content += '\n';
+    }
     
-    if (analysisResult.exclusions) {
+    if (analysisResult.exclusions && analysisResult.exclusions.length > 0) {
       content += `## Exclusions\n`;
       analysisResult.exclusions.forEach(exclusion => {
         content += `- ${exclusion}\n`;
@@ -286,23 +288,25 @@ export const PolicyAnalyzer: React.FC = () => {
                       <span className="text-sm font-medium">Summary</span>
                     </div>
                     <p className="text-sm bg-insura-gray/10 p-3 rounded-lg">
-                      {analysisResult.summary}
+                      {analysisResult.summary || 'No summary available.'}
                     </p>
                     
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Check className="h-4 w-4 text-insura-blue" />
-                        <span className="text-sm font-medium">Key Points</span>
+                    {analysisResult.keyPoints && analysisResult.keyPoints.length > 0 && (
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Check className="h-4 w-4 text-insura-blue" />
+                          <span className="text-sm font-medium">Key Points</span>
+                        </div>
+                        <ul className="space-y-2">
+                          {analysisResult.keyPoints.map((point, index) => (
+                            <li key={index} className="text-sm flex gap-2">
+                              <Check className="h-4 w-4 text-insura-teal flex-shrink-0 mt-0.5" />
+                              <span>{point}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      <ul className="space-y-2">
-                        {analysisResult.keyPoints.map((point: string, index: number) => (
-                          <li key={index} className="text-sm flex gap-2">
-                            <Check className="h-4 w-4 text-insura-teal flex-shrink-0 mt-0.5" />
-                            <span>{point}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    )}
                     
                     {analysisResult.exclusions && analysisResult.exclusions.length > 0 && (
                       <div>
@@ -311,7 +315,7 @@ export const PolicyAnalyzer: React.FC = () => {
                           <span className="text-sm font-medium">Exclusions</span>
                         </div>
                         <ul className="space-y-2">
-                          {analysisResult.exclusions.map((exclusion: string, index: number) => (
+                          {analysisResult.exclusions.map((exclusion, index) => (
                             <li key={index} className="text-sm flex gap-2">
                               <AlertCircle className="h-4 w-4 text-orange-500 flex-shrink-0 mt-0.5" />
                               <span>{exclusion}</span>
