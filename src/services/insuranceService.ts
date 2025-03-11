@@ -1,7 +1,6 @@
 
-import { InsurancePlan, RecommendationResult } from "@/types/insurance";
+import { InsurancePlan, PolicyAnalysis } from "@/types/insurance";
 import { mockInsurancePlans } from "@/utils/mockData";
-import { enhanceRecommendationsWithAI } from "@/utils/recommendationUtils";
 
 // Get insurance plans based on filters
 export const getInsurancePlans = async (filters: any) => {
@@ -51,8 +50,15 @@ export const getPersonalizedRecommendations = async (userProfile: any) => {
   }
 };
 
+// Function to add AI-generated explanations to recommendations
+export const enhanceRecommendationsWithAI = async (plans: InsurancePlan[], userProfile: any) => {
+  // In a real app, this would call an AI service to generate personalized explanations
+  // For demo, we'll return the plans with pre-written explanations
+  return plans;
+};
+
 // Function to get AI chat response
-export const getAIChatResponse = async (message: string) => {
+export const getAIChatResponse = async (message: string, context: string = 'general-insurance') => {
   // In a real app, this would call an AI API
   return new Promise<{ success: boolean; data?: string; error?: string }>((resolve) => {
     setTimeout(() => {
@@ -67,15 +73,43 @@ export const getAIChatResponse = async (message: string) => {
 // Fetch insurance plans for comparison
 export const fetchInsurancePlans = async (category: string) => {
   // In a real app, we would fetch filtered data based on category
-  return new Promise<InsurancePlan[]>((resolve) => {
+  return new Promise<{ success: boolean; data: InsurancePlan[]; error?: string }>((resolve) => {
     setTimeout(() => {
       // Filter mock data based on category if needed
       const filtered = mockInsurancePlans.filter(
         plan => category === "all" ? true : plan.type.toLowerCase() === category.toLowerCase()
       );
-      resolve(filtered);
+      resolve({
+        success: true,
+        data: filtered
+      });
     }, 1500);
   });
+};
+
+// Analyze PDF document and extract insurance policy details
+export const analyzePolicyPdf = async (file: File) => {
+  try {
+    // Read the uploaded file as ArrayBuffer
+    const arrayBuffer = await file.arrayBuffer();
+    
+    // Extract text from PDF
+    const pdfText = await extractTextFromPdfData(arrayBuffer);
+    
+    // Perform analysis on the extracted text
+    const analysis = await analyzeInsurancePolicyText(pdfText);
+    
+    return {
+      success: true,
+      data: analysis
+    };
+  } catch (error) {
+    console.error("Error analyzing policy document:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred"
+    };
+  }
 };
 
 // Convert base64 PDF data to text
@@ -104,31 +138,6 @@ const extractTextFromPdfData = async (pdfData: ArrayBuffer) => {
   } catch (error) {
     console.error("Error extracting text from PDF:", error);
     throw new Error("Failed to extract text from PDF");
-  }
-};
-
-// Analyze PDF document and extract insurance policy details
-export const analyzePolicyDocument = async (file: File) => {
-  try {
-    // Read the uploaded file as ArrayBuffer
-    const arrayBuffer = await file.arrayBuffer();
-    
-    // Extract text from PDF
-    const pdfText = await extractTextFromPdfData(arrayBuffer);
-    
-    // Perform analysis on the extracted text
-    const analysis = await analyzeInsurancePolicyText(pdfText);
-    
-    return {
-      success: true,
-      data: analysis
-    };
-  } catch (error) {
-    console.error("Error analyzing policy document:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error occurred"
-    };
   }
 };
 

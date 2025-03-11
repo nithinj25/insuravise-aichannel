@@ -40,17 +40,28 @@ export interface InsurancePlan {
 }
 
 export interface PolicyAnalysis {
-  title: string;
-  summary: string;
-  keyPoints: string[];
+  title?: string;
+  summary?: string;
+  keyPoints?: string[];
   exclusions?: string[];
   simplifiedRating: number;
   readabilityScore: string;
   estimatedReadTime: string;
-  confidenceScore: number;
+  confidenceScore?: number;
   sections?: {
     heading: string;
     content: string;
   }[];
   keyTerms?: string[];
+  wordCount?: number;
+}
+
+export interface RecommendationResult {
+  plans: InsurancePlan[];
+  matchScores: {
+    [planId: string]: number;
+  };
+  explanations: {
+    [planId: string]: string;
+  };
 }

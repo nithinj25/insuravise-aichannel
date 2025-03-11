@@ -147,8 +147,7 @@ const InsuranceFinder: React.FC = () => {
       const response = await getPersonalizedRecommendations(formData);
       
       if (response.success) {
-        const enhancedRecommendations = enhanceRecommendationsWithAI(response.data, formData);
-        setRecommendations(enhancedRecommendations);
+        setRecommendations(response.data);
         setShowResults(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
