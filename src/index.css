@@ -36,6 +36,12 @@
     --ring: 215 100% 50%;
 
     --radius: 0.75rem;
+
+    /* InsuraVise custom colors */
+    --insura-blue: 215 100% 50%;
+    --insura-teal: 187 100% 35%;
+    --insura-lightblue: 210 100% 85%;
+    --insura-gray: 210 40% 96.1%;
   }
 
   .dark {
@@ -66,6 +72,12 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 215 100% 50%;
+
+    /* InsuraVise custom colors */
+    --insura-blue: 215 100% 50%;
+    --insura-teal: 187 100% 35%;
+    --insura-lightblue: 210 60% 40%;
+    --insura-gray: 210 20% 20%;
   }
 }
 
