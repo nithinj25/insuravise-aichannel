@@ -1,6 +1,9 @@
 
 import { InsurancePlan } from "@/types/insurance";
 
+// Get base API URL from environment or default
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+
 // Get insurance plans based on filters
 export const getInsurancePlans = async (filters: any) => {
   try {
@@ -13,7 +16,8 @@ export const getInsurancePlans = async (filters: any) => {
       }
     });
     
-    const apiUrl = `http://localhost:5000/api/insurance-plans?${queryParams.toString()}`;
+    const apiUrl = `${API_BASE_URL}/insurance-plans?${queryParams.toString()}`;
+    console.log("Fetching insurance plans from:", apiUrl);
     
     const response = await fetch(apiUrl);
     
@@ -40,7 +44,8 @@ export const getInsurancePlans = async (filters: any) => {
 // Get personalized recommendations based on user profile
 export const getPersonalizedRecommendations = async (userProfile: any) => {
   try {
-    const apiUrl = 'http://localhost:5000/api/recommendations/personalized';
+    const apiUrl = `${API_BASE_URL}/recommendations/personalized`;
+    console.log("Getting personalized recommendations from:", apiUrl);
     
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -72,7 +77,8 @@ export const getPersonalizedRecommendations = async (userProfile: any) => {
 // Fetch insurance plans for comparison
 export const fetchInsurancePlans = async (category: string) => {
   try {
-    const apiUrl = `http://localhost:5000/api/insurance-plans/${category}`;
+    const apiUrl = `${API_BASE_URL}/insurance-plans/${category}`;
+    console.log("Fetching insurance plans for comparison from:", apiUrl);
     
     const response = await fetch(apiUrl);
     

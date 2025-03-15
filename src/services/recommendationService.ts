@@ -1,10 +1,14 @@
 
 import { UserPreferences, InsurancePlan } from "@/types/insurance";
 
+// Get base API URL from environment or default
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+
 // Function to enhance recommendations with AI-generated insights
 export const enhanceRecommendationsWithAI = async (plans: InsurancePlan[], userProfile: UserPreferences) => {
   try {
-    const apiUrl = 'http://localhost:5000/api/recommendations/personalized';
+    const apiUrl = `${API_BASE_URL}/recommendations/personalized`;
+    console.log("Enhancing recommendations with AI from:", apiUrl);
     
     // Since the backend already handles the enhancement,
     // we'll simply pass the user profile and use the returned data
