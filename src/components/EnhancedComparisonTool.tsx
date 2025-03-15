@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Check, X, AlertCircle, Download, FileText, Search, RefreshCw } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { fetchInsurancePlans } from "@/services/insuranceService";
+import { fetchInsurancePlans } from "@/services/insurancePlanService";
 import { PolicyDetailsModal } from "./PolicyDetailsModal";
 import { convertUSDtoINR, formatINR } from "@/utils/currencyUtils";
 

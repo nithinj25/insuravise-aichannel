@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,10 +6,9 @@ import { Bot, Send, X, MessageSquare, Loader2, FileText, HelpCircle, Brain } fro
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useLocation } from "react-router-dom";
-import { getAIChatResponse } from "@/services/insuranceService";
+import { getAIChatResponse } from "@/services/chatService";
 import { formatINR } from "@/utils/currencyUtils";
 
-// Define the type for a message
 interface Message {
   id: string;
   content: string;
@@ -29,27 +27,22 @@ export const ChatBox = () => {
   const location = useLocation();
   const isInsuranceFinder = location.pathname.includes("insurance-finder");
 
-  // Auto scroll to bottom when new messages are added
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // Focus the input when the chat box is opened
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus();
     }
   }, [isOpen]);
 
-  // Scroll to the bottom of the messages
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Toggle the chat box open/closed
   const toggleChatBox = () => {
     setIsOpen(!isOpen);
-    // Add initial greeting if this is the first time opening
     if (!isOpen && messages.length === 0) {
       const greeting = isInsuranceFinder
         ? "Hi there! I'm your InsuraBot assistant powered by AI. I can help you understand insurance policies, compare options, and complete this insurance finder form. All prices are shown in Indian Rupees (₹). What specific questions do you have about your insurance search?"
@@ -66,7 +59,6 @@ export const ChatBox = () => {
     }
   };
 
-  // Generate a relevant suggestion based on current page
   const getSuggestion = () => {
     if (isInsuranceFinder) {
       const suggestions = [
@@ -91,7 +83,6 @@ export const ChatBox = () => {
     }
   };
 
-  // Handle clicking on a suggestion
   const handleSuggestionClick = (suggestion: string) => {
     setInputValue(suggestion);
     if (inputRef.current) {
@@ -99,7 +90,6 @@ export const ChatBox = () => {
     }
   };
 
-  // Handle sending a message
   const handleSendMessage = async () => {
     if (inputValue.trim() === "") return;
     
@@ -115,10 +105,8 @@ export const ChatBox = () => {
     setIsLoading(true);
     
     try {
-      // Get context based on current page
       const context = isInsuranceFinder ? 'insurance-finder' : 'general-insurance';
       
-      // Call AI service to get a response
       const aiResponse = await getAIChatResponse(inputValue, context);
       
       if (aiResponse.success && aiResponse.data) {
@@ -149,7 +137,6 @@ export const ChatBox = () => {
     }
   };
 
-  // Handle pressing Enter to send a message
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleSendMessage();
@@ -160,7 +147,6 @@ export const ChatBox = () => {
     <div className="fixed bottom-5 right-5 z-50">
       {isOpen ? (
         <Card className="flex flex-col w-80 sm:w-96 h-[500px] shadow-premium rounded-lg border overflow-hidden">
-          {/* Chat header */}
           <div className="bg-insura-blue text-white p-3 flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Bot size={20} />
@@ -178,7 +164,6 @@ export const ChatBox = () => {
             </Button>
           </div>
           
-          {/* Messages container */}
           <div className="flex-1 p-3 overflow-y-auto bg-gray-50">
             {messages.map((message) => (
               <div
@@ -212,7 +197,6 @@ export const ChatBox = () => {
             <div ref={messagesEndRef} />
           </div>
           
-          {/* Suggestions */}
           {messages.length <= 1 && !isLoading && (
             <div className="p-3 border-t bg-gray-50">
               <div className="flex items-center gap-1 mb-2 text-xs text-muted-foreground">
@@ -238,7 +222,6 @@ export const ChatBox = () => {
             </div>
           )}
           
-          {/* Input area */}
           <div className="p-3 border-t bg-white">
             <div className="flex gap-2">
               <Input

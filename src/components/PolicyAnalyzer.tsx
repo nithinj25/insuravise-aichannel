@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { FadeIn } from "./ui/FadeIn";
 import { ChipBadge } from "./ui/ChipBadge";
@@ -16,7 +15,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { analyzePolicyPdf } from "@/services/insuranceService";
+import { analyzePolicyPdf } from "@/services/policyAnalysisService";
 import { PolicyAnalysis } from "@/types/insurance";
 
 export const PolicyAnalyzer: React.FC = () => {
@@ -111,11 +110,9 @@ export const PolicyAnalyzer: React.FC = () => {
     }
   };
 
-  // Function to handle downloading the analysis as a PDF or text file
   const handleDownloadAnalysis = () => {
     if (!analysisResult) return;
     
-    // Create a text representation of the analysis
     let content = `# ${analysisResult.title || 'Policy Analysis'}\n\n`;
     content += `## Summary\n${analysisResult.summary || 'No summary available.'}\n\n`;
     
@@ -140,7 +137,6 @@ export const PolicyAnalyzer: React.FC = () => {
     content += `- Readability: ${analysisResult.readabilityScore}\n`;
     content += `- Estimated Reading Time: ${analysisResult.estimatedReadTime}\n`;
     
-    // Create a blob and download link
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

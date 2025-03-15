@@ -1,48 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { FadeIn } from "@/components/ui/FadeIn";
-import { Button } from "@/components/ui/button";
-import { ChipBadge } from "@/components/ui/ChipBadge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Slider } from "@/components/ui/slider";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { ComparisonTool } from "@/components/ComparisonTool";
-import { EnhancedComparisonTool } from "@/components/EnhancedComparisonTool";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
+import { Hero } from "@/components/Hero";
+import { Features } from "@/components/Features";
 import { RecommendationEngine } from "@/components/RecommendationEngine";
-import { 
-  ArrowRight, 
-  ArrowLeft,
-  BadgeCheck, 
-  BarChart3, 
-  Bot, 
-  Calculator, 
-  FileText, 
-  Heart, 
-  Home, 
-  Layers, 
-  Shield,
-  ShieldCheck,
-  Sparkles,
-  Brain,
-  Users,
-  Car,
-  DollarSign,
-  CheckCircle2,
-  Cigarette,
-  Star,
-  Loader2,
-  Search
-} from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
-import { getPersonalizedRecommendations, summarizePolicyPdf, enhanceRecommendationsWithAI } from "@/services/insuranceService";
-import { UserPreferences } from "@/types/insurance";
-import { PolicyDetailsModal } from "@/components/PolicyDetailsModal";
 import { RecommendationResults } from "@/components/RecommendationResults";
+import { EnhancedComparisonTool } from "@/components/EnhancedComparisonTool";
 import { ChatBox } from "@/components/ChatBox";
-import { convertUSDtoINR, formatINR } from "@/utils/currencyUtils";
+import { getPersonalizedRecommendations } from "@/services/insurancePlanService";
+import { enhanceRecommendationsWithAI } from "@/services/recommendationService";
+import { InsurancePlan, UserPreferences } from "@/types/insurance";
 
 const InsuranceFinder: React.FC = () => {
   const { toast } = useToast();
