@@ -64,3 +64,4 @@ The frontend will run on port 5173 by default.
 - Frontend: React, TypeScript, Tailwind CSS, shadcn/ui
 - Backend: Node.js, Express
 - APIs: OpenAI
+
