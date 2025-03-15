@@ -1,17 +1,13 @@
 
 // Function to get AI chat response
 export const getAIChatResponse = async (message: string, context: string = 'general-insurance') => {
-  // For a real backend implementation, we'd make an API call to a language model service
-  const apiUrl = 'https://api.example.com/ai-chat';
+  const apiUrl = 'http://localhost:5000/api/chat/response';
   
   try {
-    // In a real implementation, we would make a fetch call like this:
-    /*
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({ message, context })
     });
@@ -21,18 +17,11 @@ export const getAIChatResponse = async (message: string, context: string = 'gene
     }
     
     const data = await response.json();
-    return { success: true, data: data.response };
-    */
-    
-    // For now, we'll simulate a response
-    return new Promise<{ success: boolean; data?: string; error?: string }>((resolve) => {
-      setTimeout(() => {
-        resolve({
-          success: true,
-          data: `I'm InsuraAI, your virtual insurance assistant. Regarding "${message}", I recommend reviewing your coverage needs based on your life stage and financial situation. Would you like me to explain more about specific insurance types?`
-        });
-      }, 1500);
-    });
+    return { 
+      success: data.success, 
+      data: data.data,
+      error: data.error 
+    };
   } catch (error) {
     console.error("Error in AI chat service:", error);
     return {

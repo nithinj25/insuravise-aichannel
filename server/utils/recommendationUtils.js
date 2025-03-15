@@ -1,42 +1,11 @@
 
-import { UserPreferences, InsurancePlan } from "@/types/insurance";
-
-// Function to enhance recommendations with AI-generated insights
-export const enhanceRecommendationsWithAI = async (plans: InsurancePlan[], userProfile: UserPreferences) => {
-  try {
-    const apiUrl = 'http://localhost:5000/api/recommendations/personalized';
-    
-    // Since the backend already handles the enhancement,
-    // we'll simply pass the user profile and use the returned data
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(userProfile)
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const result = await response.json();
-    
-    if (!result.success) {
-      throw new Error(result.error || "Failed to enhance recommendations");
-    }
-    
-    return result.data;
-  } catch (error) {
-    console.error("Error enhancing recommendations:", error);
-    // If API fails, fall back to the local implementation
-    // This ensures the app still works even if the backend is unavailable
-    return fallbackEnhanceRecommendations(plans, userProfile);
-  }
-};
-
-// Fallback local implementation if API calls fail
-const fallbackEnhanceRecommendations = (plans: InsurancePlan[], userProfile: UserPreferences) => {
+/**
+ * Enhance recommendations with AI-generated insights
+ * @param {Array} plans - Insurance plans
+ * @param {Object} userProfile - User preferences
+ * @returns {Array} - Enhanced plans with explanations
+ */
+exports.enhanceRecommendationsWithAI = async (plans, userProfile) => {
   return plans.map(plan => {
     let explanation = "";
     
