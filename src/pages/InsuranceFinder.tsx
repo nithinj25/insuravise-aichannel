@@ -1,4 +1,6 @@
+
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/Hero";
@@ -7,9 +9,36 @@ import { RecommendationEngine } from "@/components/RecommendationEngine";
 import { RecommendationResults } from "@/components/RecommendationResults";
 import { EnhancedComparisonTool } from "@/components/EnhancedComparisonTool";
 import { ChatBox } from "@/components/ChatBox";
-import { getPersonalizedRecommendations } from "@/services/insurancePlanService";
+import { PolicyDetailsModal } from "@/components/PolicyDetailsModal";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Slider } from "@/components/ui/slider";
+import { FadeIn } from "@/components/ui/FadeIn";
+import { ChipBadge } from "@/components/ui/ChipBadge";
+import { 
+  ArrowLeft, 
+  Heart, 
+  Users, 
+  Car, 
+  Home, 
+  ShieldCheck, 
+  DollarSign, 
+  CheckCircle2, 
+  Cigarette, 
+  Star, 
+  Loader2, 
+  Search,
+  Brain 
+} from "lucide-react";
+import { 
+  getPersonalizedRecommendations, 
+} from "@/services/insurancePlanService";
+import { summarizePolicyPdf } from "@/services/policyAnalysisService";
 import { enhanceRecommendationsWithAI } from "@/services/recommendationService";
 import { InsurancePlan, UserPreferences } from "@/types/insurance";
+import { formatINR, convertUSDtoINR } from "@/utils/currencyUtils";
 
 const InsuranceFinder: React.FC = () => {
   const { toast } = useToast();
