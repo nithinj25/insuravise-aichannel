@@ -3,6 +3,7 @@ import React from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { PolicyAnalyzer } from "@/components/PolicyAnalyzer";
+import { ChatBox } from "@/components/ChatBox";
 
 const PolicyAnalyzerPage: React.FC = () => {
   return (
@@ -12,6 +13,7 @@ const PolicyAnalyzerPage: React.FC = () => {
         <PolicyAnalyzer />
       </main>
       <Footer />
+      <ChatBox />
     </div>
   );
 };

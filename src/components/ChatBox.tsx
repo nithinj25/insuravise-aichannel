@@ -121,7 +121,7 @@ export const ChatBox = () => {
       // Call AI service to get a response
       const aiResponse = await getAIChatResponse(inputValue, context);
       
-      if (aiResponse.success) {
+      if (aiResponse.success && aiResponse.data) {
         const aiMessage: Message = {
           id: Date.now().toString(),
           content: aiResponse.data,

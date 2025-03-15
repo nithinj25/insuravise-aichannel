@@ -1,3 +1,4 @@
+
 import { InsurancePlan, PolicyAnalysis, RecommendationResult } from "@/types/insurance";
 import { mockInsurancePlans } from "@/utils/mockData";
 
@@ -58,37 +59,108 @@ export const enhanceRecommendationsWithAI = async (plans: InsurancePlan[], userP
 
 // Function to get AI chat response
 export const getAIChatResponse = async (message: string, context: string = 'general-insurance') => {
-  // In a real app, this would call an AI API
-  return new Promise<{ success: boolean; data?: string; error?: string }>((resolve) => {
-    setTimeout(() => {
-      resolve({
-        success: true,
-        data: `I'm InsuraAI, your virtual insurance assistant. Regarding "${message}", I recommend reviewing your coverage needs based on your life stage and financial situation. Would you like me to explain more about specific insurance types?`
-      });
-    }, 1500);
-  });
+  // For a real backend implementation, we'd make an API call to a language model service
+  const apiUrl = 'https://api.example.com/ai-chat';
+  
+  try {
+    // In a real implementation, we would make a fetch call like this:
+    /*
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+      },
+      body: JSON.stringify({ message, context })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return { success: true, data: data.response };
+    */
+    
+    // For now, we'll simulate a response
+    return new Promise<{ success: boolean; data?: string; error?: string }>((resolve) => {
+      setTimeout(() => {
+        resolve({
+          success: true,
+          data: `I'm InsuraAI, your virtual insurance assistant. Regarding "${message}", I recommend reviewing your coverage needs based on your life stage and financial situation. Would you like me to explain more about specific insurance types?`
+        });
+      }, 1500);
+    });
+  } catch (error) {
+    console.error("Error in AI chat service:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to get AI response"
+    };
+  }
 };
 
 // Fetch insurance plans for comparison
 export const fetchInsurancePlans = async (category: string) => {
-  // In a real app, we would fetch filtered data based on category
-  return new Promise<{ success: boolean; data: InsurancePlan[]; error?: string }>((resolve) => {
-    setTimeout(() => {
-      // Filter mock data based on category if needed
-      const filtered = mockInsurancePlans.filter(
-        plan => category === "all" ? true : plan.type.toLowerCase() === category.toLowerCase()
-      );
-      resolve({
-        success: true,
-        data: filtered
-      });
-    }, 1500);
-  });
+  // For a real backend implementation, we would fetch from an API
+  const apiUrl = `https://api.example.com/insurance-plans?category=${category}`;
+  
+  try {
+    // In a real implementation, we would make a fetch call like this:
+    /*
+    const response = await fetch(apiUrl);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return { success: true, data: data.plans };
+    */
+    
+    // For now, we'll use mock data
+    return new Promise<{ success: boolean; data: InsurancePlan[]; error?: string }>((resolve) => {
+      setTimeout(() => {
+        // Filter mock data based on category if needed
+        const filtered = mockInsurancePlans.filter(
+          plan => category === "all" ? true : plan.type.toLowerCase() === category.toLowerCase()
+        );
+        resolve({
+          success: true,
+          data: filtered
+        });
+      }, 1500);
+    });
+  } catch (error) {
+    console.error("Error fetching insurance plans:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to fetch insurance plans",
+      data: []
+    };
+  }
 };
 
 // Analyze PDF document and extract insurance policy details
-export const analyzePolicyPdf = async (file: File) => {
+export const analyzePolicyPdf = async (file: File): Promise<{ success: boolean; data?: PolicyAnalysis; error?: string }> => {
   try {
+    // In a real backend implementation, we would upload the file to a server endpoint
+    // const formData = new FormData();
+    // formData.append('policyFile', file);
+    
+    // const response = await fetch('https://api.example.com/analyze-policy', {
+    //   method: 'POST',
+    //   body: formData
+    // });
+    
+    // if (!response.ok) {
+    //   throw new Error(`HTTP error! status: ${response.status}`);
+    // }
+    
+    // const data = await response.json();
+    // return { success: true, data: data.analysis };
+    
+    // For now, we'll use our local processing
     // Read the uploaded file as ArrayBuffer
     const arrayBuffer = await file.arrayBuffer();
     
@@ -141,8 +213,8 @@ const extractTextFromPdfData = async (pdfData: ArrayBuffer) => {
 };
 
 // Analyze the policy text and extract key information
-const analyzeInsurancePolicyText = async (policyText: string) => {
-  // In a real app, this might use NLP or ML models
+const analyzeInsurancePolicyText = async (policyText: string): Promise<PolicyAnalysis> => {
+  // In a real application, this might use NLP or ML models via an API
   // For demo, we'll use simple text analysis
   
   // Generate a default summary if it doesn't exist
@@ -264,7 +336,23 @@ function extractKeyTerms(text: string) {
 
 // Summarize a policy PDF from URL
 export const summarizePolicyPdf = async (policyUrl: string) => {
-  // In a real app, this would fetch the PDF and analyze it
+  // In a real backend implementation, we would fetch the PDF file from the URL
+  // and analyze it using a server API
+  // const response = await fetch('https://api.example.com/summarize-policy', {
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/json'
+  //   },
+  //   body: JSON.stringify({ policyUrl })
+  // });
+  
+  // if (!response.ok) {
+  //   throw new Error(`HTTP error! status: ${response.status}`);
+  // }
+  
+  // const data = await response.json();
+  // return { success: true, data: data.analysis };
+  
   // For demo, we'll return a mock analysis after a delay
   return new Promise<{ success: boolean; data?: any; error?: string }>((resolve) => {
     setTimeout(() => {
