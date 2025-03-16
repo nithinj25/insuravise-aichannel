@@ -1,17 +1,14 @@
 
-const pdf = require('pdf-parse');
-const axios = require('axios');
-const { analyzePolicyText, extractSections, calculateReadabilityScore, extractKeyTerms } = require('../utils/policyAnalysisUtils');
+const { analyzePolicy, extractPolicyInfoFromPdf, extractPolicyInfoFromUrl } = require('../utils/policyAnalysisUtils');
 
 /**
- * Analyze policy PDF document
+ * Analyze a policy PDF file
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
- * @param {Function} next - Express next middleware function
  */
-exports.analyzePolicyPdf = async (req, res, next) => {
+exports.analyzePolicyPdf = async (req, res) => {
   try {
-    // Check if file exists
+    // Check if a file was uploaded
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -19,36 +16,36 @@ exports.analyzePolicyPdf = async (req, res, next) => {
       });
     }
 
-    // Get buffer from multer
+    console.log('Analyzing policy file:', req.file.originalname);
+    
+    // Extract the PDF buffer from the request
     const pdfBuffer = req.file.buffer;
-
-    // Extract text from PDF
-    const pdfData = await pdf(pdfBuffer);
-    const pdfText = pdfData.text;
-
-    // Analyze the policy text
-    const analysis = await analyzePolicyText(pdfText);
-
+    
+    // Analyze the policy using the utility function
+    const analysisResult = await extractPolicyInfoFromPdf(pdfBuffer);
+    
     res.status(200).json({
       success: true,
-      data: analysis
+      data: analysisResult
     });
   } catch (error) {
-    console.error('Error analyzing policy document:', error);
-    next(error);
+    console.error('Error analyzing policy PDF:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to analyze policy document'
+    });
   }
 };
 
 /**
- * Summarize policy PDF from a URL
+ * Summarize a policy from a URL
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
- * @param {Function} next - Express next middleware function
  */
-exports.summarizePolicyPdf = async (req, res, next) => {
+exports.summarizePolicyPdf = async (req, res) => {
   try {
     const { policyUrl } = req.body;
-
+    
     if (!policyUrl) {
       return res.status(400).json({
         success: false,
@@ -56,24 +53,20 @@ exports.summarizePolicyPdf = async (req, res, next) => {
       });
     }
 
-    // Fetch the PDF from the URL
-    const response = await axios.get(policyUrl, {
-      responseType: 'arraybuffer'
-    });
-
-    // Extract text from PDF
-    const pdfData = await pdf(response.data);
-    const pdfText = pdfData.text;
-
-    // Analyze the policy text
-    const analysis = await analyzePolicyText(pdfText);
-
+    console.log('Analyzing policy from URL:', policyUrl);
+    
+    // Analyze the policy from the URL using the utility function
+    const analysisResult = await extractPolicyInfoFromUrl(policyUrl);
+    
     res.status(200).json({
       success: true,
-      data: analysis
+      data: analysisResult
     });
   } catch (error) {
-    console.error('Error summarizing policy from URL:', error);
-    next(error);
+    console.error('Error analyzing policy from URL:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to analyze policy from URL'
+    });
   }
 };
