@@ -35,7 +35,7 @@ import {
 import { 
   getPersonalizedRecommendations, 
 } from "@/services/insurancePlanService";
-import { summarizePolicyPdf } from "@/services/policyAnalysisService";
+import { summarizePolicyUrl } from "@/services/policyAnalysisService";
 import { enhanceRecommendationsWithAI } from "@/services/recommendationService";
 import { InsurancePlan, UserPreferences } from "@/types/insurance";
 import { formatINR, convertUSDtoINR } from "@/utils/currencyUtils";
@@ -175,7 +175,7 @@ const InsuranceFinder: React.FC = () => {
     setIsPolicyLoading(true);
     
     try {
-      const policyResponse = await summarizePolicyPdf(plan.policyUrl);
+      const policyResponse = await summarizePolicyUrl(plan.policyUrl);
       if (policyResponse.success) {
         setPolicyDetails(policyResponse.data);
       } else {

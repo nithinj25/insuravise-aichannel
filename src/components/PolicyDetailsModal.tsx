@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -9,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { ChipBadge } from "./ui/ChipBadge";
-import { summarizePolicyPdf } from "@/services/policyAnalysisService";
+import { summarizePolicyUrl } from "@/services/policyAnalysisService";
 import { AlertCircle, FileText, Check, XCircle, BookOpen, Clock, FileSpreadsheet } from "lucide-react";
 
 interface PolicyDetailsModalProps {
@@ -38,7 +39,7 @@ export const PolicyDetailsModal: React.FC<PolicyDetailsModalProps> = ({
     setError(null);
 
     try {
-      const response = await summarizePolicyPdf(policy.policyUrl);
+      const response = await summarizePolicyUrl(policy.policyUrl);
       if (response.success) {
         setSummary(response.data);
       } else {

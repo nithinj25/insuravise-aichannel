@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { FadeIn } from "./ui/FadeIn";
 import { ChipBadge } from "./ui/ChipBadge";
@@ -15,7 +16,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { analyzePolicyPdf } from "@/services/policyAnalysisService";
+import { analyzePolicyFile } from "@/services/policyAnalysisService";
 import { PolicyAnalysis } from "@/types/insurance";
 
 export const PolicyAnalyzer: React.FC = () => {
@@ -78,7 +79,7 @@ export const PolicyAnalyzer: React.FC = () => {
     }, 300);
     
     try {
-      const response = await analyzePolicyPdf(uploadedFile);
+      const response = await analyzePolicyFile(uploadedFile);
       
       if (response.success && response.data) {
         setAnalysisResult(response.data);
