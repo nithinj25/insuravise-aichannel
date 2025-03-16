@@ -1,4 +1,3 @@
-
 export interface UserPreferences {
   type: string;
   coverageLevel: number;
@@ -64,4 +63,10 @@ export interface RecommendationResult {
   explanations: {
     [planId: string]: string;
   };
+}
+
+export interface ChatResponse {
+  success: boolean;
+  message: string;
+  error?: string;
 }

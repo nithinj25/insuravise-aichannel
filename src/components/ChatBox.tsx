@@ -6,7 +6,7 @@ import { Bot, Send, X, MessageSquare, Loader2, FileText, HelpCircle, Brain } fro
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useLocation } from "react-router-dom";
-import { getAIChatResponse } from "@/services/chatService";
+import { getChatResponse } from "@/services/chatService";
 import { formatINR } from "@/utils/currencyUtils";
 
 interface Message {
@@ -107,12 +107,12 @@ export const ChatBox = () => {
     try {
       const context = isInsuranceFinder ? 'insurance-finder' : 'general-insurance';
       
-      const aiResponse = await getAIChatResponse(inputValue, context);
+      const aiResponse = await getChatResponse(inputValue, context);
       
-      if (aiResponse.success && aiResponse.data) {
+      if (aiResponse.success && aiResponse.message) {
         const aiMessage: Message = {
           id: Date.now().toString(),
-          content: aiResponse.data,
+          content: aiResponse.message,
           role: "assistant",
           timestamp: new Date(),
         };
