@@ -1,10 +1,13 @@
 
 import { PolicyAnalysis } from "@/types/insurance";
 
+// Get API base URL from environment
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 // Analyze PDF document and extract insurance policy details
 export const analyzePolicyPdf = async (file: File): Promise<{ success: boolean; data?: PolicyAnalysis; error?: string }> => {
   try {
-    const apiUrl = 'http://localhost:5000/api/policy/analyze';
+    const apiUrl = `${apiBaseUrl}/policy/analyze`;
     const formData = new FormData();
     formData.append('policyFile', file);
     
@@ -35,7 +38,7 @@ export const analyzePolicyPdf = async (file: File): Promise<{ success: boolean; 
 // Summarize a policy PDF from URL
 export const summarizePolicyPdf = async (policyUrl: string) => {
   try {
-    const apiUrl = 'http://localhost:5000/api/policy/summarize';
+    const apiUrl = `${apiBaseUrl}/policy/summarize`;
     
     const response = await fetch(apiUrl, {
       method: 'POST',
