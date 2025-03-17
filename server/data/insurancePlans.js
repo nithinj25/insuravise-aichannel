@@ -1,205 +1,289 @@
 
-// Sample insurance plans data for development
-module.exports = [
+// Mock insurance plans data
+const insurancePlans = [
+  // Health Insurance Plans
   {
-    id: "health-basic-1",
+    id: "health-1",
+    name: "Comprehensive Health Shield",
     type: "health",
-    name: "Basic Health Coverage",
-    providerName: "Arogya Insurance",
-    providerId: "arogya-ins",
-    price: 400,
+    providerName: "Apollo Health",
+    price: 5000,
+    coverageAmount: 500000,
     features: [
-      "₹3,75,000 annual coverage",
-      "Basic hospitalization",
-      "Accident coverage",
-      "30-day waiting period",
-      "No pre-existing conditions coverage"
+      "Hospitalization coverage",
+      "Cashless treatment at 5000+ hospitals",
+      "No claim bonus up to 50%",
+      "Free annual health check-up",
+      "Coverage for 30+ critical illnesses",
+      "Day care procedures covered"
     ],
-    policyUrl: "https://example.com/policies/basic-health"
+    deductible: 5000,
+    tpaService: "MediAssist",
+    waitingPeriod: "30 days for illness, 2 years for pre-existing diseases",
+    copay: "10% for senior citizens",
+    matchScore: 85,
+    ratingScore: 4.5,
+    popularityRank: 2
   },
   {
-    id: "health-standard-1",
+    id: "health-2",
+    name: "Family Health Premier",
     type: "health",
-    name: "Standard Health Plan",
-    providerName: "Swasthya Care",
-    providerId: "swasthya-care",
-    price: 800,
+    providerName: "MaxBupa",
+    price: 8000,
+    coverageAmount: 1000000,
     features: [
-      "₹7,50,000 annual coverage",
-      "Comprehensive hospitalization",
-      "Pre and post hospitalization expenses",
-      "Day care procedures",
-      "Ambulance coverage",
-      "No-claim bonus"
+      "Coverage for entire family",
+      "Unlimited restoration of sum insured",
+      "International emergency coverage",
+      "Maternity benefits after 3 years",
+      "Coverage for AYUSH treatments",
+      "Home healthcare services"
     ],
-    policyUrl: "https://example.com/policies/standard-health"
+    deductible: 10000,
+    tpaService: "Health India TPA",
+    waitingPeriod: "30 days for illness, 18 months for pre-existing diseases",
+    copay: "None",
+    matchScore: 92,
+    ratingScore: 4.7,
+    popularityRank: 1
   },
   {
-    id: "health-premium-1",
+    id: "health-3",
+    name: "Individual Health Basic",
     type: "health",
-    name: "Premium Health Shield",
-    providerName: "Bharosa Health",
-    providerId: "bharosa-health",
-    price: 1200,
+    providerName: "ICICI Lombard",
+    price: 3000,
+    coverageAmount: 300000,
     features: [
-      "₹15,00,000 annual coverage",
-      "Zero waiting period",
-      "Pre-existing conditions covered",
-      "International treatment coverage",
-      "Free health check-ups",
-      "Maternity benefits",
-      "OPD coverage",
-      "Dental and vision care"
+      "Hospitalization coverage",
+      "Cashless facility at 3000+ hospitals",
+      "Organ donor expenses",
+      "Ambulance charges covered",
+      "Daily hospital cash allowance",
+      "Domiciliary hospitalization"
     ],
-    policyUrl: "https://example.com/policies/premium-health"
+    deductible: 2500,
+    tpaService: "Paramount TPA",
+    waitingPeriod: "30 days for illness, 3 years for pre-existing diseases",
+    copay: "15% for certain hospitals",
+    matchScore: 78,
+    ratingScore: 4.2,
+    popularityRank: 3
+  },
+  
+  // Life Insurance Plans
+  {
+    id: "life-1",
+    name: "Term Life Secure",
+    type: "life",
+    providerName: "LIC",
+    price: 12000,
+    coverageAmount: 10000000,
+    features: [
+      "Pure term insurance coverage",
+      "Option to increase cover at key life stages",
+      "Critical illness benefit rider",
+      "Tax benefits under Section 80C",
+      "Disability benefit option",
+      "Terminal illness benefit"
+    ],
+    policyTerm: "10-40 years",
+    paymentTerm: "Regular pay, Limited pay options",
+    maturityBenefits: "None (pure protection plan)",
+    surrenderValue: "None",
+    matchScore: 88,
+    ratingScore: 4.6,
+    popularityRank: 1
   },
   {
-    id: "life-basic-1",
+    id: "life-2",
+    name: "Endowment Assurance",
     type: "life",
-    name: "Basic Term Life",
-    providerName: "Suraksha Life",
-    providerId: "suraksha-life",
-    price: 250,
+    providerName: "SBI Life",
+    price: 25000,
+    coverageAmount: 5000000,
     features: [
-      "₹37,50,000 coverage",
-      "10-year term",
-      "Death benefit only",
-      "No medical examination required",
-      "Instant approval"
-    ],
-    policyUrl: "https://example.com/policies/basic-term-life"
-  },
-  {
-    id: "life-standard-1",
-    type: "life",
-    name: "Enhanced Life Protection",
-    providerName: "Jeevan Insurance",
-    providerId: "jeevan-ins",
-    price: 600,
-    features: [
-      "₹75,00,000 coverage",
-      "20-year term",
-      "Critical illness rider",
-      "Accidental death benefit",
-      "Premium waiver on disability"
-    ],
-    policyUrl: "https://example.com/policies/enhanced-life"
-  },
-  {
-    id: "life-premium-1",
-    type: "life",
-    name: "Comprehensive Life Cover",
-    providerName: "Raksha Life",
-    providerId: "raksha-life",
-    price: 1000,
-    features: [
-      "₹1,50,00,000 coverage",
-      "Whole life policy",
-      "Cash value accumulation",
+      "Life insurance with savings",
+      "Guaranteed returns",
       "Loan facility available",
-      "Multiple payout options",
-      "Riders for critical illness, disability, and long-term care"
+      "Flexible premium payment terms",
+      "Life cover with maturity benefit",
+      "Optional riders available"
     ],
-    policyUrl: "https://example.com/policies/comprehensive-life"
+    policyTerm: "10-30 years",
+    paymentTerm: "Equal to policy term",
+    maturityBenefits: "Sum assured plus bonuses",
+    surrenderValue: "Available after 3 years",
+    matchScore: 75,
+    ratingScore: 4.3,
+    popularityRank: 3
   },
   {
-    id: "auto-basic-1",
+    id: "life-3",
+    name: "ULIP Growth Plus",
+    type: "life",
+    providerName: "HDFC Life",
+    price: 50000,
+    coverageAmount: 7500000,
+    features: [
+      "Market-linked returns",
+      "Choice of investment funds",
+      "Flexibility to switch funds",
+      "Partial withdrawal facility",
+      "Top-up premium option",
+      "Tax-free returns under current law"
+    ],
+    policyTerm: "5-15 years",
+    paymentTerm: "5-10 years",
+    maturityBenefits: "Fund value on maturity",
+    surrenderValue: "Fund value less charges after lock-in",
+    matchScore: 82,
+    ratingScore: 4.5,
+    popularityRank: 2
+  },
+  
+  // Auto Insurance Plans
+  {
+    id: "auto-1",
+    name: "Comprehensive Car Shield",
     type: "auto",
+    providerName: "Bajaj Allianz",
+    price: 15000,
+    coverageAmount: 1000000,
+    features: [
+      "Own damage coverage",
+      "Third-party liability",
+      "24/7 roadside assistance",
+      "No claim bonus up to 50%",
+      "Zero depreciation option",
+      "Personal accident cover"
+    ],
+    deductible: 1000,
+    addOns: "Engine protector, Consumables cover, Return to invoice",
+    claimSettlementRatio: "95%",
+    networkGarages: "4000+",
+    matchScore: 90,
+    ratingScore: 4.7,
+    popularityRank: 1
+  },
+  {
+    id: "auto-2",
     name: "Basic Auto Insurance",
-    providerName: "Safar Motors",
-    providerId: "safar-motors",
-    price: 300,
+    type: "auto",
+    providerName: "ICICI Lombard",
+    price: 8000,
+    coverageAmount: 500000,
     features: [
       "Third-party liability",
-      "Basic fire and theft coverage",
-      "No personal accident cover",
-      "No zero depreciation"
+      "Basic own damage coverage",
+      "Limited roadside assistance",
+      "No claim bonus up to 20%",
+      "Personal accident cover",
+      "Fire and theft protection"
     ],
-    policyUrl: "https://example.com/policies/basic-auto"
+    deductible: 2000,
+    addOns: "None included (available at extra cost)",
+    claimSettlementRatio: "92%",
+    networkGarages: "3000+",
+    matchScore: 75,
+    ratingScore: 4.1,
+    popularityRank: 3
   },
   {
-    id: "auto-standard-1",
+    id: "auto-3",
+    name: "Premium Motor Protection",
     type: "auto",
-    name: "Standard Auto Protection",
-    providerName: "Akar Insurance",
-    providerId: "akar-ins",
-    price: 600,
+    providerName: "TATA AIG",
+    price: 20000,
+    coverageAmount: 1500000,
     features: [
       "Comprehensive coverage",
-      "Personal accident cover",
-      "24/7 roadside assistance",
-      "Engine protection",
-      "Partial zero depreciation"
+      "Enhanced third-party liability",
+      "Premium roadside assistance",
+      "No claim bonus up to 50%",
+      "Zero depreciation included",
+      "Additional personal accident cover"
     ],
-    policyUrl: "https://example.com/policies/standard-auto"
+    deductible: 500,
+    addOns: "Included: Engine protector, Consumables, Key replacement, Tyre protection",
+    claimSettlementRatio: "97%",
+    networkGarages: "5000+",
+    matchScore: 85,
+    ratingScore: 4.5,
+    popularityRank: 2
   },
+  
+  // Home Insurance Plans
   {
-    id: "auto-premium-1",
-    type: "auto",
-    name: "Premium Auto Shield",
-    providerName: "Vahan Suraksha",
-    providerId: "vahan-suraksha",
-    price: 900,
-    features: [
-      "Comprehensive coverage with increased limits",
-      "Full zero depreciation",
-      "Return to invoice cover",
-      "No claim bonus protection",
-      "Consumables cover",
-      "Key replacement",
-      "Tyre protection",
-      "Daily allowance for alternate transport"
-    ],
-    policyUrl: "https://example.com/policies/premium-auto"
-  },
-  {
-    id: "home-basic-1",
+    id: "home-1",
+    name: "Complete Home Security",
     type: "home",
+    providerName: "HDFC ERGO",
+    price: 7000,
+    coverageAmount: 5000000,
+    features: [
+      "Structure coverage",
+      "Contents protection",
+      "Burglary and theft coverage",
+      "Natural disaster protection",
+      "Temporary accommodation costs",
+      "Public liability cover"
+    ],
+    deductible: 5000,
+    coverageArea: "Building and contents",
+    exclusions: "Wear and tear, War and nuclear perils",
+    addOns: "Jewellery protection, Electronic equipment cover",
+    matchScore: 88,
+    ratingScore: 4.6,
+    popularityRank: 1
+  },
+  {
+    id: "home-2",
     name: "Basic Home Insurance",
-    providerName: "Ghar Suraksha",
-    providerId: "ghar-suraksha",
-    price: 350,
+    type: "home",
+    providerName: "SBI General",
+    price: 3000,
+    coverageAmount: 2000000,
     features: [
-      "Structure coverage only",
-      "Basic fire and natural disaster protection",
-      "No contents coverage",
-      "Limited liability protection"
+      "Basic structure coverage",
+      "Fire and allied perils",
+      "Limited contents coverage",
+      "Natural disaster protection",
+      "Minimal burglary cover",
+      "Basic liability protection"
     ],
-    policyUrl: "https://example.com/policies/basic-home"
+    deductible: 10000,
+    coverageArea: "Primarily building structure",
+    exclusions: "Contents over 5 years old, High-value items",
+    addOns: "None included (available at extra cost)",
+    matchScore: 72,
+    ratingScore: 4.0,
+    popularityRank: 3
   },
   {
-    id: "home-standard-1",
-    type: "home",
-    name: "Standard Home Protection",
-    providerName: "Niwas Insurance",
-    providerId: "niwas-ins",
-    price: 650,
-    features: [
-      "Structure and contents coverage",
-      "Extended natural disaster protection",
-      "Theft and burglary coverage",
-      "Standard personal liability",
-      "Temporary accommodation costs"
-    ],
-    policyUrl: "https://example.com/policies/standard-home"
-  },
-  {
-    id: "home-premium-1",
-    type: "home",
+    id: "home-3",
     name: "Premium Home Shield",
-    providerName: "Aavas Suraksha",
-    providerId: "aavas-suraksha",
-    price: 1100,
+    type: "home",
+    providerName: "Bajaj Allianz",
+    price: 12000,
+    coverageAmount: 10000000,
     features: [
-      "Full structure and contents coverage",
-      "High-value items protection",
-      "Extensive liability coverage",
-      "Home office coverage",
-      "Service line protection",
-      "Identity theft protection",
-      "Home systems protection",
-      "Restoration and repair with original materials"
+      "Comprehensive structure coverage",
+      "All-risk contents protection",
+      "Enhanced burglary and theft coverage",
+      "Extensive natural disaster coverage",
+      "Extended temporary accommodation",
+      "Higher liability limits"
     ],
-    policyUrl: "https://example.com/policies/premium-home"
+    deductible: 2500,
+    coverageArea: "Building, contents, and additional structures",
+    exclusions: "Intentional damage, Undisclosed renovations",
+    addOns: "Included: Valuable items, Home office equipment, Rent loss coverage",
+    matchScore: 82,
+    ratingScore: 4.4,
+    popularityRank: 2
   }
 ];
+
+module.exports = insurancePlans;

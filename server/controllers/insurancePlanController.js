@@ -1,27 +1,50 @@
 
-const { getPlans, getPlanById } = require('../models/insurancePlanModel');
+const insurancePlans = require('../data/insurancePlans');
 
 /**
- * Get all insurance plans with optional filters
+ * Get all insurance plans
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
- * @param {Function} next - Express next middleware function
  */
-exports.getInsurancePlans = async (req, res, next) => {
+exports.getInsurancePlans = (req, res) => {
   try {
-    // Extract filter parameters from query string
-    const filters = req.query;
+    // Apply filters if provided
+    let filteredPlans = [...insurancePlans];
     
-    // Get plans from the model
-    const plans = await getPlans(filters);
+    if (req.query.type) {
+      filteredPlans = filteredPlans.filter(plan => 
+        plan.type.toLowerCase() === req.query.type.toLowerCase()
+      );
+    }
+    
+    if (req.query.priceMin) {
+      filteredPlans = filteredPlans.filter(plan => 
+        plan.price >= parseFloat(req.query.priceMin)
+      );
+    }
+    
+    if (req.query.priceMax) {
+      filteredPlans = filteredPlans.filter(plan => 
+        plan.price <= parseFloat(req.query.priceMax)
+      );
+    }
+    
+    if (req.query.provider) {
+      filteredPlans = filteredPlans.filter(plan => 
+        plan.providerName.toLowerCase().includes(req.query.provider.toLowerCase())
+      );
+    }
     
     res.status(200).json({
       success: true,
-      data: plans
+      data: filteredPlans
     });
   } catch (error) {
     console.error('Error fetching insurance plans:', error);
-    next(error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to fetch insurance plans'
+    });
   }
 };
 
@@ -29,29 +52,26 @@ exports.getInsurancePlans = async (req, res, next) => {
  * Get insurance plans by type
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
- * @param {Function} next - Express next middleware function
  */
-exports.getInsurancePlansByType = async (req, res, next) => {
+exports.getInsurancePlansByType = (req, res) => {
   try {
     const { type } = req.params;
     
-    if (!type) {
-      return res.status(400).json({
-        success: false,
-        error: 'Insurance type is required'
-      });
-    }
-    
-    // Get plans by type from the model
-    const plans = await getPlans({ type: type === 'all' ? undefined : type });
+    // Return mock data for now
+    const filteredPlans = insurancePlans.filter(plan => 
+      plan.type.toLowerCase() === type.toLowerCase()
+    );
     
     res.status(200).json({
       success: true,
-      data: plans
+      data: filteredPlans
     });
   } catch (error) {
     console.error('Error fetching insurance plans by type:', error);
-    next(error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to fetch insurance plans'
+    });
   }
 };
 
@@ -59,21 +79,12 @@ exports.getInsurancePlansByType = async (req, res, next) => {
  * Get insurance plan details by ID
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
- * @param {Function} next - Express next middleware function
  */
-exports.getInsurancePlanDetails = async (req, res, next) => {
+exports.getInsurancePlanDetails = (req, res) => {
   try {
     const { id } = req.params;
     
-    if (!id) {
-      return res.status(400).json({
-        success: false,
-        error: 'Plan ID is required'
-      });
-    }
-    
-    // Get plan details by ID from the model
-    const plan = await getPlanById(id);
+    const plan = insurancePlans.find(plan => plan.id === id);
     
     if (!plan) {
       return res.status(404).json({
@@ -88,6 +99,9 @@ exports.getInsurancePlanDetails = async (req, res, next) => {
     });
   } catch (error) {
     console.error('Error fetching insurance plan details:', error);
-    next(error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to fetch insurance plan details'
+    });
   }
 };
